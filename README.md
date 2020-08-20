@@ -2,7 +2,7 @@
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/6d422ca5cc514f55b253d29b86502a45)](https://app.codacy.com/gh/BuildForSDGCohort2/Team-1681-KYC?utm_source=github.com&utm_medium=referral&utm_content=BuildForSDGCohort2/Team-1681-KYC&utm_campaign=Badge_Grade_Settings)
 
-**KYC** - Know Your Contacts!
+**KYC** - Know Your Contacts
 
 In this hard times of the pandemic, it's hard to get to know your _closest_ _contacts_. 
 
@@ -19,10 +19,10 @@ This app is aimed at bridging this gap for **Uganda** and **world wide** without
 This is to make it a choice for an individual to know their contacts both online and offline.
 
 This app is designed of the following basis
-- [x] Hiding User identity and information
-- [x] Making it a choice for the users to allow them identify the time they need to know their contacts.
-- [x] An implementable system for all public areas
-- [x] An alert/notification due to close contacts being infected.
- - [x] An option to jote down the assigned persons number and code to be entered in a later time if one does not hold a smartphone or does not own one. This can be updated on web.
- - [x] Updates for infections done by a responsive body
- - [x] Search for contacts based on date, meeting location or NIN.
+  - [x] Hiding User identity and information
+  - [x] Making it a choice for the users to allow them identify the time they need to know their contacts.
+  - [x] An implementable system for all public areas
+  - [x] An alert/notification due to close contacts being infected.
+  - [x] An option to jote down the assigned persons number and code to be entered in a later time if one does not hold a smartphone or does not own one. This can be updated on web.
+  - [x] Updates for infections done by a responsive body
+  - [x] Search for contacts based on date, meeting location or NIN.
