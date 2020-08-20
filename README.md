@@ -2,7 +2,7 @@
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/6d422ca5cc514f55b253d29b86502a45)](https://app.codacy.com/gh/BuildForSDGCohort2/Team-1681-KYC?utm_source=github.com&utm_medium=referral&utm_content=BuildForSDGCohort2/Team-1681-KYC&utm_campaign=Badge_Grade_Settings)
 
-**KYC** - Know Your Contacts
+_KYC_ - Know Your Contacts
 
 In this hard times of the pandemic, it's hard to get to know your _closest_ _contacts_. 
 
