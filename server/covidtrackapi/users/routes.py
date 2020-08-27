@@ -75,11 +75,6 @@ def login():
                 return jsonify(response)
 
             else:
-
-                notification = Notification(
-                    user_id=user.id, title=title, msg_date=datetime.utcnow(), msg=msg)
-                db.session.add(notification)
-
                 try:
                     db.session.commit()
                     response = {
@@ -428,7 +423,7 @@ def profile(userid):
 # @roles_required('admin','agent')
 def change_user_status():
     user_data = request.get_json()
-    if not user:
+    if not user_data:
         response = {
             'status': 'error',
             'message': 'Missing Data'
@@ -476,7 +471,7 @@ def change_user_status():
 # @roles_required('admin')
 def add_contacts():
     user_data = request.get_json()
-    if not user:
+    if not user_data:
         response = {
             'status': 'error',
             'message': 'Missing Data'
@@ -533,7 +528,7 @@ def add_contacts():
 # @roles_required('admin')
 def get_contacts():
     user_data = request.get_json()
-    if not user:
+    if not user_data:
         response = {
             'status': 'error',
             'message': 'Missing Data'
