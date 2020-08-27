@@ -190,8 +190,8 @@ def faqs():
     return jsonify(response)
 
 
-@main.route('/faqs/<int:faq_id>/update', methods=['GET', 'POST'])
-@login_required
+@main.route('/faqs/<int:faq_id>/update', methods=['PUT'])
+# @login_required
 # @roles_required('admin')
 def update_faq(faq_id):
 
@@ -253,13 +253,13 @@ def update_faq(faq_id):
     else:
         response = {
             'status': 'error',
-            "message": f"There is no Frequently Asked Question with id = {faq_id}"
+            "message": "There is no Frequently Asked Question with id = {}".format(faq_id)
         }
 
         return jsonify(response), 400
 
 
-@main.route('/faqs/<int:faq_id>/delete', methods=['GET', 'POST'])
+@main.route('/faqs/<int:faq_id>/delete', methods=['DELETE'])
 @login_required
 # @roles_required('admin')
 def del_faq(faq_id):

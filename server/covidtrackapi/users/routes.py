@@ -5,7 +5,7 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for,
 import jwt
 from datetime import datetime, timedelta, date
 from covidtrackapi.models import User, Role, Notification, Journey
-from covidtrackapi.users.utils import roles_required, is_leap_year, save_avartar, send_msg, get_user_role, get_local_time, token_required
+from covidtrackapi.users.utils import roles_required, is_leap_year, save_avartar, get_user_role, get_local_time, token_required
 from flask_login import login_user, logout_user, current_user, login_required
 import random
 import os
@@ -111,7 +111,7 @@ def login():
     else:
         response = {
             'status': 'error',
-            'message': f'No user with phone number {user_data["phone"]}. Please Register or Check your Login credentials'
+            'message': 'No user with phone number {}. Please Register or Check your Login credentials'.format(user_data["phone"])
         }
         return jsonify(response)
 

@@ -146,7 +146,7 @@ def update_role(role_id):
     if not role:
         response = {
             "status": "error",
-            "message": f"There is no Role with id {role_id}"
+            "message": "There is no Role with id {}".format(role_id)
         }
 
         return jsonify(response)

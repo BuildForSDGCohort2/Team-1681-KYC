@@ -1,6 +1,8 @@
 import 'package:country_list_pick/country_list_pick.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:kyc_client/screen/home_screen.dart';
+import 'package:kyc_client/screen/user_info.dart';
 
 enum AuthMode { login, signup }
 
@@ -11,8 +13,105 @@ class AuthScreen extends StatefulWidget {
 
 class _AuthScreenState extends State<AuthScreen> {
   TextEditingController _phoneController = TextEditingController();
+  TextEditingController _smsCodeController = TextEditingController();
   AuthMode authMode = AuthMode.login;
   String _countryCode = '+256';
+
+  Future<bool> validateUserPhone(
+    String phone,
+    BuildContext context,
+  ) async {
+    // first check that the number is not in the database, then proceed to this
+
+    FirebaseAuth _auth = FirebaseAuth.instance;
+
+    _auth.verifyPhoneNumber(
+      phoneNumber: phone,
+      timeout: Duration(seconds: 60),
+      verificationCompleted: (AuthCredential credential) async {
+        Navigator.of(context).pop();
+        AuthResult result = await _auth.signInWithCredential(credential);
+
+        FirebaseUser user = result.user;
+
+        if (user != null) {
+          // add the user to the local database
+          // Navigate to the stepper to complet the profile
+
+          // temporarily
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) {
+            // return StepperProfile();
+          }));
+        }
+      },
+      verificationFailed: (AuthException exception) {
+        _displayError(context, exception);
+      },
+      codeSent: (String verificationId, [int forceResendingToken]) {
+        // Sow a dilog box tht the user enters the code they recieved
+        showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) {
+              return AlertDialog(
+                title: Text('Enter Code'),
+                content: Column(
+                  children: [
+                    TextField(
+                      controller: _smsCodeController,
+                    ),
+                    RaisedButton(
+                      onPressed: () async {
+                        AuthCredential credential =
+                            PhoneAuthProvider.getCredential(
+                                verificationId: verificationId,
+                                smsCode: _smsCodeController.text.trim());
+
+                        AuthResult result =
+                            await _auth.signInWithCredential(credential);
+                        FirebaseUser user = result.user;
+
+                        if (user != null) {
+                          Navigator.pushReplacement(context,
+                              MaterialPageRoute(builder: (context) {
+                            return AdditionalInfoPage(
+                                phone: _phoneController.text);
+                          }));
+                        } else {
+                          _displayError(context, 'Phone Verification Failed');
+                        }
+                      },
+                      child: Text('Confirm'),
+                    )
+                  ],
+                ),
+              );
+            });
+      },
+      codeAutoRetrievalTimeout: null,
+    );
+  }
+
+  _displayError(context, error) async {
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Error'),
+        content: Text(error),
+        actions: [
+          FlatButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(
+              'Retry',
+              style: TextStyle(color: Colors.red),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,47 +125,68 @@ class _AuthScreenState extends State<AuthScreen> {
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               Container(
-                  child: Column(
-                children: [
-                  Text('KYC'),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Text('Know Your Contacts'),
-                ],
-              )),
-              Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
+                child: Column(
                   children: [
+                    Text('KYC'),
                     SizedBox(
-                      child: CountryListPick(
-                        isShowFlag: true,
-                        isShowTitle: false,
-                        isShowCode: true,
-                        isDownIcon: false,
-                        initialSelection: _countryCode,
-                        showEnglishName: true,
-                        onChanged: (code) {
-                          setState(() {
-                            _countryCode = code.dialCode;
-                          });
-                        },
-                      ),
-                      width: 130,
+                      height: 20,
+                    ),
+                    Text('Know Your Contacts'),
+                  ],
+                ),
+              ),
+              Center(
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          child: CountryListPick(
+                            isShowFlag: true,
+                            isShowTitle: false,
+                            isShowCode: true,
+                            isDownIcon: false,
+                            initialSelection: _countryCode,
+                            showEnglishName: true,
+                            onChanged: (code) {
+                              setState(() {
+                                _countryCode = code.dialCode;
+                              });
+                            },
+                          ),
+                          width: 130,
+                        ),
+                        SizedBox(
+                          width: 5,
+                        ),
+                        Expanded(
+                          child: TextFormField(
+                            controller: _phoneController,
+                            keyboardType: TextInputType.phone,
+                            decoration: InputDecoration(hintText: '771234567'),
+                          ),
+                        ),
+                      ],
                     ),
                     SizedBox(
-                      width: 5,
+                      height: 10,
                     ),
-                    Expanded(
-                      child: TextFormField(
-                        controller: _phoneController,
-                        keyboardType: TextInputType.phone,
-                        decoration: InputDecoration(hintText: '771234567'),
-                      ),
+                    RaisedButton(
+                      onPressed: () {
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(
+                            builder: (contex) => HomeScreen(),
+                          ),
+                        );
+                      },
+                      child: Text('Signup'),
+                    ),
+                    SizedBox(
+                      height: 20,
                     ),
                   ],
                 ),
@@ -74,16 +194,11 @@ class _AuthScreenState extends State<AuthScreen> {
               SizedBox(
                 height: 10,
               ),
-              RaisedButton(
-                onPressed: () {
-                  print('${_countryCode + "" + _phoneController.text}');
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(
-                      builder: (contex) => HomeScreen(),
-                    ),
-                  );
+              GestureDetector(
+                onTap: () {
+                  print('Forgotten Password');
                 },
-                child: Text('Signup'),
+                child: Text('Forgot Password?'),
               )
             ],
           ),

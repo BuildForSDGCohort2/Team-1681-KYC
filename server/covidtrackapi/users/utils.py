@@ -113,26 +113,6 @@ def gen_pass(code_len=5, pass_type='passcode'):
     return ''.join(secrets.choice(pass_values) for _ in range(code_len))
 
 
-def send_msg(msg, phone):
-    # Identify the modem id
-    modem_details = get_modem_and_sim_id()
-
-    modem_id = modem_details['modem_id']
-    sim_id = modem_details['sim_id']
-
-    # Message command
-    sms_cmd = f'mmcli -m {modem_id} --messaging-create-sms="text={msg}, number={phone}"'
-    msg = subprocess.check_output(sms_cmd, shell=True)
-
-    # Get the sms id
-    sms_id = msg.decode('utf-8')[-2]
-
-    # Send sms
-    send_msg_cmd = f'mmcli -s {sms_id} --send'
-    response = subprocess.check_output(send_msg_cmd, shell=True)
-    return response.decode('utf-8')
-
-
 def get_local_time(utc_time):
         # utc_time_date = datetime.strptime(utc_time, "%Y-%m-%d %H:%M")
         # utc_datetime_timestamp = float(utc_time_date.timestamp())

@@ -27,6 +27,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(120))
     nin = db.Column(db.String(120))
     roles = db.Column(db.String, nullable=False)
+    offlinecode = db.Column(db.String, nullable=False)
     avartar = db.Column(db.String, default='person.jpg', nullable=False)
     password = db.Column(db.String(60), nullable=False)
     is_active = db.Column(db.Boolean, nullable=False, default=1)
@@ -49,7 +50,7 @@ class User(db.Model, UserMixin):
     verify_reset_token = staticmethod(verify_reset_token)
 
     def __repr__(self):
-        return f"User('{self.id}','{self.phone}','{self.firstname}','{self.lastname}', '{self.email}', '{self.avartar}', '{self.roles}', '{self.is_active}', '{self.first_time_login}', '{self.userId}')"
+        return f"User('{self.id}', '{self.offlinecode}', '{self.userId}','{self.phone}','{self.firstname}','{self.lastname}', '{self.email}', '{self.avartar}', '{self.roles}', '{self.is_active}', '{self.first_time_login}')"
 
 
 class Journey(db.Model):
