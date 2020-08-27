@@ -16,62 +16,77 @@ class _AuthScreenState extends State<AuthScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('KYC'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Center(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(colors: [
+            Color(0xFF00B686),
+            Color(0xFF00838F),
+          ]),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                  child: Column(
                 children: [
+                  Text('KYC'),
                   SizedBox(
-                    child: CountryListPick(
-                      isShowFlag: true,
-                      isShowTitle: false,
-                      isShowCode: true,
-                      isDownIcon: false,
-                      initialSelection: _countryCode,
-                      showEnglishName: true,
-                      onChanged: (code) {
-                        setState(() {
-                          _countryCode = code.dialCode;
-                        });
-                      },
-                    ),
-                    width: 130,
+                    height: 20,
                   ),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  Expanded(
-                    child: TextFormField(
-                      controller: _phoneController,
-                      keyboardType: TextInputType.phone,
-                      decoration: InputDecoration(hintText: '771234567'),
-                    ),
-                  ),
+                  Text('Know Your Contacts'),
                 ],
+              )),
+              Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      child: CountryListPick(
+                        isShowFlag: true,
+                        isShowTitle: false,
+                        isShowCode: true,
+                        isDownIcon: false,
+                        initialSelection: _countryCode,
+                        showEnglishName: true,
+                        onChanged: (code) {
+                          setState(() {
+                            _countryCode = code.dialCode;
+                          });
+                        },
+                      ),
+                      width: 130,
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Expanded(
+                      child: TextFormField(
+                        controller: _phoneController,
+                        keyboardType: TextInputType.phone,
+                        decoration: InputDecoration(hintText: '771234567'),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            RaisedButton(
-              onPressed: () {
-                print('${_countryCode + "" + _phoneController.text}');
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(
-                    builder: (contex) => HomeScreen(),
-                  ),
-                );
-              },
-              child: Text('Signup'),
-            )
-          ],
+              SizedBox(
+                height: 10,
+              ),
+              RaisedButton(
+                onPressed: () {
+                  print('${_countryCode + "" + _phoneController.text}');
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                      builder: (contex) => HomeScreen(),
+                    ),
+                  );
+                },
+                child: Text('Signup'),
+              )
+            ],
+          ),
         ),
       ),
     );

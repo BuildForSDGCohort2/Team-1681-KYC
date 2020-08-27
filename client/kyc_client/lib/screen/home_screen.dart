@@ -19,30 +19,6 @@ class _HomeScreenState extends State<HomeScreen> {
     final double devWidth = MediaQuery.of(context).size.width;
     final double targetWidth = devWidth > 550.0 ? 500.0 : devWidth * 0.95;
     return Scaffold(
-      bottomNavigationBar: Row(
-        children: [
-          _buildNavItem(
-            icon: Icons.home,
-            title: 'Home',
-            index: 0,
-          ),
-          _buildNavItem(
-            icon: Icons.flag,
-            title: 'Reports',
-            index: 1,
-          ),
-          _buildNavItem(
-            icon: Icons.assessment,
-            title: 'Stats',
-            index: 2,
-          ),
-          _buildNavItem(
-            icon: Icons.settings,
-            title: 'Settings',
-            index: 3,
-          )
-        ],
-      ),
       body: Stack(
         children: [
           Column(
@@ -119,26 +95,47 @@ class _HomeScreenState extends State<HomeScreen> {
                       icon: Icons.today,
                       label: 'Today',
                       data: 1200,
-                      backgroundColor: Colors.blue.withOpacity(0.5),
-                      iconColor: Color(0xFF01579B),
+                      iconColor: Color(0xFF00b300),
                     ),
                     buildContactSummary(
                       icon: Icons.people_outline,
                       label: 'All Contacts',
-                      data: 1200,
-                      backgroundColor: Colors.cyanAccent.withOpacity(0.5),
-                      iconColor: Color(0xFF01579B),
+                      data: 20,
+                      iconColor: Color(0xFFffa500),
                     ),
                     buildContactSummary(
                       icon: Icons.mood_bad,
                       label: 'Infected',
-                      data: 1200,
-                      backgroundColor: Colors.blue.withOpacity(0.5),
-                      iconColor: Color(0xFF01579B),
+                      data: 0,
+                      iconColor: Color(0xFFb33636),
                     ),
                   ],
                 ),
               ))
+        ],
+      ),
+      bottomNavigationBar: Row(
+        children: [
+          _buildNavItem(
+            icon: Icons.home,
+            title: 'Home',
+            index: 0,
+          ),
+          _buildNavItem(
+            icon: Icons.flag,
+            title: 'Reports',
+            index: 1,
+          ),
+          _buildNavItem(
+            icon: Icons.assessment,
+            title: 'Stats',
+            index: 2,
+          ),
+          _buildNavItem(
+            icon: Icons.settings,
+            title: 'Settings',
+            index: 3,
+          )
         ],
       ),
       floatingActionButton: _selectedIndex == 0
@@ -152,17 +149,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Container buildContactSummary(
-      {IconData icon,
-      String label,
-      int data,
-      Color backgroundColor,
-      Color iconColor}) {
+      {IconData icon, String label, int data, Color iconColor}) {
     return Container(
       margin: EdgeInsets.all(5),
       width: 90,
       height: 90,
       decoration: BoxDecoration(
-          color: backgroundColor, borderRadius: BorderRadius.circular(10)),
+          color: Colors.grey.withOpacity(0.2),
+          borderRadius: BorderRadius.circular(10)),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -184,11 +178,11 @@ class _HomeScreenState extends State<HomeScreen> {
             height: 5,
           ),
           Container(
-            width: 70,
+            width: 85,
             padding: EdgeInsets.only(left: 5, right: 5),
             decoration: BoxDecoration(
-              color: Colors.green,
-              border: Border.all(color: Colors.green),
+              color: iconColor,
+              border: Border.all(color: iconColor),
               borderRadius: BorderRadius.circular(15),
             ),
             child: Center(
