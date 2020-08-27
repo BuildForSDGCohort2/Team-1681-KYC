@@ -29,10 +29,13 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
     'address': null,
   };
   bool passwordError = true,
+      confirmationError = true,
       firstnameError = true,
       lastnameError = true,
       emailError = true,
-      addressError = true,
+      countryError = true,
+      stateError = true,
+      streetError = true,
       profilePicError = true;
 
   @override
@@ -52,13 +55,17 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
   final _firstNameFocusNode = FocusNode();
   final _lastNameFocusNode = FocusNode();
   final _emailFocusNode = FocusNode();
-  final _addressFocusNode = FocusNode();
+  final _countryFocusNode = FocusNode();
+  final _stateFocusNode = FocusNode();
+  final _streetFocusNode = FocusNode();
 
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _addressController = TextEditingController();
+  final TextEditingController _countryController = TextEditingController();
+  final TextEditingController _stateController = TextEditingController();
+  final TextEditingController _streetController = TextEditingController();
 
   Widget _buildpasswordTextFormField() {
     return TextFormField(
@@ -110,11 +117,11 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
       onChanged: (String value) {
         if (value.length < 2) {
           setState(() {
-            passwordError = true;
+            confirmationError = true;
             _passwordState = StepState.error;
           });
         } else {
-          passwordError = false;
+          confirmationError = false;
           setState(() {
             _passwordState = StepState.complete;
           });
@@ -224,9 +231,8 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
 
   Widget _buildCountryTextFormField() {
     return TextFormField(
-      keyboardType: TextInputType.phone,
-      focusNode: _addressFocusNode,
-      controller: _addressController,
+      focusNode: _countryFocusNode,
+      controller: _countryController,
       decoration: InputDecoration(
         hintText: 'Country',
         prefixIcon: Icon(
@@ -243,11 +249,11 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
         _formData['country'] = value;
         if (value.length != 10) {
           setState(() {
-            addressError = true;
+            countryError = true;
             _addressState = StepState.error;
           });
         } else {
-          addressError = false;
+          countryError = false;
           setState(() {
             _addressState = StepState.complete;
           });
@@ -258,9 +264,9 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
 
   Widget _buildStateTextFormField() {
     return TextFormField(
-      keyboardType: TextInputType.phone,
-      focusNode: _addressFocusNode,
-      controller: _addressController,
+      keyboardType: TextInputType.streetAddress,
+      focusNode: _stateFocusNode,
+      controller: _stateController,
       decoration: InputDecoration(
         hintText: 'Sate/District',
         prefixIcon: Icon(
@@ -277,11 +283,11 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
         _formData['state'] = value;
         if (value.length != 10) {
           setState(() {
-            addressError = true;
+            stateError = true;
             _addressState = StepState.error;
           });
         } else {
-          addressError = false;
+          stateError = false;
           setState(() {
             _addressState = StepState.complete;
           });
@@ -292,9 +298,9 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
 
   Widget _buildStreetTextFormField() {
     return TextFormField(
-      keyboardType: TextInputType.phone,
-      focusNode: _addressFocusNode,
-      controller: _addressController,
+      keyboardType: TextInputType.streetAddress,
+      focusNode: _streetFocusNode,
+      controller: _streetController,
       decoration: InputDecoration(
         hintText: 'Street',
         prefixIcon: Icon(
@@ -311,11 +317,11 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
         _formData['street'] = value;
         if (value.length != 10) {
           setState(() {
-            addressError = true;
+            streetError = true;
             _addressState = StepState.error;
           });
         } else {
-          addressError = false;
+          streetError = false;
           setState(() {
             _addressState = StepState.complete;
           });
@@ -326,9 +332,8 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
 
   Widget _buildProfilePicImageField() {
     return TextFormField(
-      keyboardType: TextInputType.phone,
-      focusNode: _addressFocusNode,
-      controller: _addressController,
+      // focusNode: _profileFocusNode,
+      // controller: _profileController,
       decoration: InputDecoration(
         hintText: 'Street',
         prefixIcon: Icon(
@@ -345,11 +350,11 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
         _formData['street'] = value;
         if (value.length != 10) {
           setState(() {
-            addressError = true;
+            profilePicError = true;
             _addressState = StepState.error;
           });
         } else {
-          addressError = false;
+          profilePicError = false;
           setState(() {
             _addressState = StepState.complete;
           });
@@ -363,7 +368,10 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
         firstnameError ||
         lastnameError ||
         emailError ||
-        addressError) {
+        countryError ||
+        stateError ||
+        streetError ||
+        profilePicError) {
       return false;
     }
     return true;
@@ -436,46 +444,77 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Additional Information'),
-      ),
-      body: Form(
-        key: _formKey,
-        autovalidate: true,
-        child: Stepper(
-          steps: _detailStepper(),
-          type: StepperType.vertical,
-          physics: ClampingScrollPhysics(),
-          currentStep: this._currentStep,
-          onStepTapped: (step) {
-            setState(
-              () {
-                this._currentStep = step;
-              },
-            );
-          },
-          onStepContinue: () {
-            setState(
-              () {
-                if (this._currentStep < this._detailStepper().length - 1) {
-                  this._currentStep = this._currentStep + 1;
-                } else {
-                  // _submitForm();
-                }
-              },
-            );
-          },
-          onStepCancel: () {
-            setState(
-              () {
-                if (this._currentStep > 0) {
-                  this._currentStep -= 1;
-                } else {
-                  this._currentStep = 0;
-                }
-              },
-            );
-          },
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(colors: [
+            Color(0xFF00B686),
+            Color(0xFF00838F),
+          ]),
+        ),
+        child: Padding(
+          padding: EdgeInsets.only(top: 40, left: 20, right: 20),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Additional Information',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Expanded(
+                child: Form(
+                  key: _formKey,
+                  autovalidate: true,
+                  child: Stepper(
+                    steps: _detailStepper(),
+                    type: StepperType.vertical,
+                    physics: ClampingScrollPhysics(),
+                    currentStep: this._currentStep,
+                    onStepTapped: (step) {
+                      setState(
+                        () {
+                          this._currentStep = step;
+                        },
+                      );
+                    },
+                    onStepContinue: () {
+                      setState(
+                        () {
+                          if (this._currentStep <
+                              this._detailStepper().length - 1) {
+                            this._currentStep = this._currentStep + 1;
+                          } else {
+                            // _submitForm();
+                          }
+                        },
+                      );
+                    },
+                    onStepCancel: () {
+                      setState(
+                        () {
+                          if (this._currentStep > 0) {
+                            this._currentStep -= 1;
+                          } else {
+                            this._currentStep = 0;
+                          }
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

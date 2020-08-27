@@ -130,11 +130,27 @@ class _AuthScreenState extends State<AuthScreen> {
               Container(
                 child: Column(
                   children: [
-                    Text('KYC'),
+                    Text(
+                      'KYC',
+                      style: TextStyle(
+                        fontSize: 45,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: -1.2,
+                      ),
+                    ),
                     SizedBox(
                       height: 20,
                     ),
-                    Text('Know Your Contacts'),
+                    Text(
+                      'Know Your Contacts',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: -1.2,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -179,7 +195,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       onPressed: () {
                         Navigator.of(context).pushReplacement(
                           MaterialPageRoute(
-                            builder: (contex) => HomeScreen(),
+                            builder: (contex) => AdditionalInfoPage(),
                           ),
                         );
                       },
