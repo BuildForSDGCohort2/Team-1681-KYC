@@ -3,9 +3,7 @@ from functools import wraps
 from flask import current_app
 from flask_login import current_user
 from covidtrackapi.models import Role
-import jwt
-import os
-import string
+import jwt, secrets,os,string
 from PIL import Image
 from datetime import datetime
 from covidtrackapi import app
