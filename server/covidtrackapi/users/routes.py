@@ -507,7 +507,7 @@ def add_contacts():
 
     # Make an upload of this
     for upload in to_update:
-        user_journey = Journey('journeycode': upload['journeycode'], 'rider':upload['rider'], 'client':upload['client'], 'pickuptime':upload['pickuptime'], 'source':upload['source'], 'destination':upload['destination'], 'uploaded':True, 'infected':False)
+        user_journey = Journey('journeycode': upload['journeycode'], 'rider':upload['rider'], 'client':upload['client'], 'pickuptime':upload['pickuptime'], 'source':upload['source'], 'destination':upload['destination'], 'infected':False)
         db.session.add(user_journey)
 
     try:

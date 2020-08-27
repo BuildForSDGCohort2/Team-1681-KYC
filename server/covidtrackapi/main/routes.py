@@ -3,7 +3,7 @@ import json
 
 from flask_login import current_user, login_required
 from covidtrackapi.users.utils import roles_required
-from covidtrackapi.models import Faq, Role, Notification
+from covidtrackapi.models import Faq, Role, Notification, Journey
 from covidtrackapi import db
 
 main = Blueprint('main', __name__)
