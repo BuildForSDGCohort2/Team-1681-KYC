@@ -507,7 +507,7 @@ def add_contacts():
 
     # Make an upload of this
     for upload in to_update:
-        user_journey = Journey('journeycode': upload['journeycode'], 'rider':upload['rider'], 'client':upload['client'], 'pickuptime':upload['pickuptime'], 'source':upload['source'], 'destination':upload['destination'])
+        user_journey = Journey(journeycode=upload['journeycode'], rider=upload['rider'], client=upload['client'], pickuptime=upload['pickuptime'], source=upload['source'], destination=upload['destination'])
         db.session.add(user_journey)
 
     try:
@@ -560,7 +560,7 @@ def get_contacts():
     if len(all_user_contacts) > 0 :
         message = 'Contacts Fetched Successfully!'
         downloads = [{'rider': journey.rider, 'journeycode': journey.journeycode, 'client': journey.client,
-             'source': journey.source, 'destination': journey.destination, 'pickuptime': journey.pickuptime, 'uploaded': journey.uploaded} for journey in all_user_contacts]
+             'source':journey.source, 'destination':journey.destination, 'pickuptime':journey.pickuptime, 'uploaded':journey.uploaded} for journey in all_user_contacts]
 
     response = {
         'status': 'success',
