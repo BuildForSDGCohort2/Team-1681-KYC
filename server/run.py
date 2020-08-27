@@ -1,5 +1,5 @@
 from covidtrackapi import app
-from flask import send_file, current_app, flash, send_from_directory, make_response
+from flask import send_from_directory, make_response
 # from momedoapi import create_app
 
 # app = create_app()

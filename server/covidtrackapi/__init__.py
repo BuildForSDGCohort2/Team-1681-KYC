@@ -3,12 +3,8 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
-from flask_migrate import Migrate
-from covidtrackapi.config import Config
 from flask_material import Material
 from flask_mail import Mail
-import os
-# from flask import current_app
 
 
 app = Flask(__name__)
@@ -37,21 +33,9 @@ Material(app)
 bcrypt = Bcrypt(app)
 # Add the login manager
 
-# Configure a secret key
-# app.config.from_object(Config)
-
-# SECRET_KEY = os.getenv('SECRET_KEY')
-# Configure the database
-# SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI')
-
-# perform configurations
-
-
 loginmanager = LoginManager(app)
 loginmanager.login_view = 'users.login'
 loginmanager.login_message_category = 'danger'
-
-migrate = Migrate(app, db)
 
 # Import the routes here to avoid circilar imports
 from covidtrackapi.users.routes import users

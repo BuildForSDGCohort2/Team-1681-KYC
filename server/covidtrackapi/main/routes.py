@@ -1,9 +1,6 @@
-from flask import Blueprint, render_template, flash, redirect, url_for, request, jsonify
-import json
-
-from flask_login import current_user, login_required
-from covidtrackapi.users.utils import roles_required
-from covidtrackapi.models import Faq, Role, Notification, Journey
+from flask import Blueprint, request, jsonify
+from flask_login import login_required
+from covidtrackapi.models import Faq, Notification, Journey
 from covidtrackapi import db
 
 main = Blueprint('main', __name__)
@@ -312,7 +309,7 @@ def notification(userid):
         user_notifications = [
             notification for notifcation in notifcations if notifcation.read_status == False]
         unread = len(user_notifications)
-        Message = 'User Notifications Successfully Fetched'
+        message = 'User Notifications Successfully Fetched'
         data = [{'date': notification.msg_date, 'msg': notification.msg, 'read status': bool(
             notification.read_status), 'title': notification.title, 'sender': notification.sender} for notification in notifcations]
 

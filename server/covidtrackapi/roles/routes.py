@@ -2,10 +2,9 @@
 #####              USER ROLE                #####
 #################################################
 from flask import Blueprint, request, jsonify
-from flask_login import current_user, login_required
-from covidtrackapi.users.utils import roles_required
+from flask_login import login_required
 from covidtrackapi import db
-from covidtrackapi.models import Role, User
+from covidtrackapi.models import Role
 
 roles = Blueprint('roles', __name__)
 
@@ -60,7 +59,7 @@ def role():
             except Exception as e:
                 response = {
                     'status': 'error',
-                    'message': ('Error Adding User Role')
+                    'message': 'Error Adding User Role. '+str(e)
                 }
                 return jsonify(response)
     else:

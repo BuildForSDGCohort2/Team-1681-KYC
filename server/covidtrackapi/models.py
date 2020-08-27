@@ -1,4 +1,3 @@
-from datetime import datetime
 from covidtrackapi import db, loginmanager, migrate, app
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask_login import UserMixin
@@ -42,7 +41,7 @@ class User(db.Model, UserMixin):
         serial = Serializer(app.config['SECRET_KEY'])
         try:
             user_id = serial.loads(token)['user_id']
-        except:
+        except Exception:
             return None
 
         return User.query.get(user_id)

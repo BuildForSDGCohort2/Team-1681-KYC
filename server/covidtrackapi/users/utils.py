@@ -1,17 +1,13 @@
-from flask import flash, redirect, url_for, jsonify, request
+from flask import jsonify, request
 from functools import wraps
 from flask import current_app
 from flask_login import current_user
 from covidtrackapi.models import Role
 import jwt
-import secrets
 import os
-import random
 import string
-import secrets
-import subprocess
 from PIL import Image
-from datetime import datetime, timedelta
+from datetime import datetime
 from covidtrackapi import app
 
 # Check for leap_year
@@ -74,7 +70,7 @@ def token_required(func):
             return jsonify(response), 403
 
         try:
-            data = jwt.decode(token, app.config['SECRET_KEY'])
+            jwt.decode(token, app.config['SECRET_KEY'])
         except Exception as e:
             response = {
                 'status': 'error',
@@ -87,7 +83,7 @@ def token_required(func):
 
 def save_avartar(user_avartar):
     random_hex = secrets.token_hex(8)
-    img_filename, img_ext = os.path.splitext(user_avartar.filename)
+    _, img_ext = os.path.splitext(user_avartar.filename)
     avartar_filename = random_hex + img_ext
 
     # Get full path where the image is to be saved
