@@ -1,5 +1,5 @@
 from datetime import datetime
-from mmdeasycashapi import db, loginmanager, migrate, app
+from covidtrackapi import db, loginmanager, migrate, app
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask_login import UserMixin
 import uuid

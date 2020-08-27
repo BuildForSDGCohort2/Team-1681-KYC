@@ -1,12 +1,11 @@
 # ###############################################
 #####              USER ROLE                #####
 #################################################
-from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
+from flask import Blueprint, request, jsonify
 from flask_login import current_user, login_required
 from covidtrackapi.users.utils import roles_required
 from covidtrackapi import db
 from covidtrackapi.models import Role, User
-from datetime import datetime
 
 roles = Blueprint('roles', __name__)
 

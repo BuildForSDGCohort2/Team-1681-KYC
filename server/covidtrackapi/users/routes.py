@@ -1,7 +1,7 @@
 # ###############################################
 #####                LOGIN                  #####
 #################################################
-from flask import Blueprint, render_template, request, flash, redirect, url_for, json, current_app, jsonify
+from flask import Blueprint, request, flash,json, current_app, jsonify
 import jwt
 from datetime import datetime, timedelta, date
 from covidtrackapi.models import User, Role, Notification, Journey
