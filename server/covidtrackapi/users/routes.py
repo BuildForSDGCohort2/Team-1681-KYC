@@ -1,13 +1,12 @@
 # ###############################################
 #####                LOGIN                  #####
 #################################################
-from flask import Blueprint, request, flash,json, current_app, jsonify, url_for
+from flask import Blueprint, request,json, current_app, jsonify, url_for
 import jwt
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta
 from covidtrackapi.models import User, Role, Notification, Journey
-from covidtrackapi.users.utils import roles_required, is_leap_year, save_avartar, get_user_role, get_local_time, token_required
+from covidtrackapi.users.utils import is_leap_year, save_avartar, get_user_role, get_local_time, token_required
 from flask_login import login_user, logout_user, current_user, login_required
-import random
 import os
 
 from covidtrackapi import app, db, bcrypt, mail
@@ -93,7 +92,7 @@ def login():
                 except Exception as e:
                     response = {
                         'status': 'error',
-                        'message': 'Something Went Wrong'
+                        'message': 'Something Went Wrong. '+str(e)
                     }
                     return jsonify(response)
 
@@ -341,8 +340,6 @@ def profile(userid):
 
     if request.method == 'PUT':
         user_data = request.get_json()
-        required_fields = ["firstname", 'lastname',
-                           'email', 'nin', 'avartar']
 
         if not user_data:
             response = {
@@ -441,7 +438,7 @@ def change_user_status():
 
     user = User.query.filter_by(id=int(user_data['user_id'])).first()
 
-    user_role = get_user_role()[0]
+    # user_role = get_user_role()[0]
     action = user_data['action']
 
     if action == 'infected':

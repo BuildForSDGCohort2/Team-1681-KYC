@@ -1,4 +1,4 @@
-from covidtrackapi import db, loginmanager, migrate, app
+from covidtrackapi import db, loginmanager, app
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask_login import UserMixin
 import uuid

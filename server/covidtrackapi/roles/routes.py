@@ -2,7 +2,6 @@
 #####              USER ROLE                #####
 #################################################
 from flask import Blueprint, request, jsonify
-from flask_login import login_required
 from covidtrackapi import db
 from covidtrackapi.models import Role
 
