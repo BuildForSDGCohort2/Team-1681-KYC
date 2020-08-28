@@ -19,20 +19,20 @@ This app is aimed at bridging this gap for **Uganda** and **world wide** without
 This is to make it a choice for an individual to know their contacts both online and offline.
 
 This app is designed of the following basis
-  -[x] Hiding User identity and information
-  -[x] Making it a choice for the users to allow them identify the time they need to know their contacts.
-  -[x] An implementable system for all public areas
-  -[x] An alert or notification due to close contacts being infected.
-  -[x] An option to jote down the assigned persons number and code to be entered in a later time if one does not hold a smartphone or \n does not own one. This can be updated on web.
-  -[x] Updates for infections done by a responsive body
-  -[x] Search for contacts based on date, meeting location or NIN.
+- [x] Hiding User identity and information
+- [x] Making it a choice for the users to allow them identify the time they need to know their contacts.
+- [x] An implementable system for all public areas
+- [x] An alert or notification due to close contacts being infected.
+- [x] An option to jote down the assigned persons number and code to be entered in a later time if one does not hold a smartphone or \n does not own one. This can be updated on web.
+- [x] Updates for infections done by a responsive body
+- [x] Search for contacts based on date, meeting location or NIN.
   
-  This was done with the aim of achieving the following
-  1  Hiding User identity and information
-  2  Making it a choice for the users to allow them identify the time they need to know their contacts.
-  3  An implementable system for all public areas
-  4  An alert/notification due to close contacts being infected.
-  5  An option to jote down the assigned persons number and code to be entered in a later time if one does not hold a smartphone or does not own one. This can be updated on web.
-  6  Updates for infections done by a responsive body
-  7  Search for contacts based on date, meeting location or NIN
+This was done with the aim of achieving the following
+1  Hiding User identity and information
+2  Making it a choice for the users to allow them identify the time they need to know their contacts.
+3  An implementable system for all public areas
+4  An alert/notification due to close contacts being infected.
+5  An option to jote down the assigned persons number and code to be entered in a later time if one does not hold a smartphone or does not own one. This can be updated on web.
+6  Updates for infections done by a responsive body
+7  Search for contacts based on date, meeting location or NIN
 
