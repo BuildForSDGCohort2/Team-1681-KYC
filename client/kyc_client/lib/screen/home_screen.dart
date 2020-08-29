@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:kyc_client/api/databaseProvider.dart';
+import 'package:kyc_client/screen/scanbarcode.dart';
 import 'package:kyc_client/widgets/home_nav_widget.dart';
 import 'package:kyc_client/widgets/reports_nav_widget.dart';
 import 'package:kyc_client/widgets/settings_nav_widget.dart';
@@ -53,7 +54,13 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: _selectedIndex == 0
           ? FloatingActionButton(
               backgroundColor: Color(0xFF00B686),
-              onPressed: () {},
+              onPressed: () async {
+                await Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => ScanBarCode(),
+                  ),
+                );
+              },
               child: Icon(Icons.crop_free),
             )
           : SizedBox.shrink(),

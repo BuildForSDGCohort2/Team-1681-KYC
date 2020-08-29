@@ -5,13 +5,14 @@ class HomeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double devWidth = MediaQuery.of(context).size.width;
+    final double devHeight = MediaQuery.of(context).size.height;
     final double targetWidth = devWidth > 550.0 ? 500.0 : devWidth * 0.95;
     return Stack(
       children: [
         Column(
           children: [
             Container(
-              height: targetWidth * 0.55,
+              height: devHeight * 0.315,
               decoration: BoxDecoration(
                 gradient: LinearGradient(colors: [
                   Color(0xFF00B686),

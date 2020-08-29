@@ -19,12 +19,61 @@ class _QRCodePageState extends State<QRCodePage> {
   }
 
   Widget _buildQRCodeSection(BuildContext context) {
-    return Container(
-      color: Colors.blue,
-      child: ListView(
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(top: 25),
+    final double devWidth = MediaQuery.of(context).size.width;
+    final double devHeight = MediaQuery.of(context).size.height;
+    final double targetWidth = devWidth > 550.0 ? 500.0 : devWidth * 0.95;
+    return Stack(
+      children: [
+        Container(
+          height: devHeight * 0.114,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(colors: [
+              Color(0xFF00B686),
+              Color(0xFF00838F),
+            ]),
+          ),
+          child: Column(
+            children: [
+              Padding(
+                padding: EdgeInsets.only(top: 40, left: 20, right: 20),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        GestureDetector(
+                          onTap: () => Navigator.of(context).pop(),
+                          child: Icon(
+                            Icons.chevron_left,
+                            color: Colors.white,
+                          ),
+                        ),
+                        Text(
+                          'My QR Code',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                          ),
+                        ),
+                        Icon(
+                          Icons.more_vert,
+                          color: Colors.white,
+                        )
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        Center(
+          child: Container(
+            margin: EdgeInsets.only(top: devHeight * .114),
+            color: Colors.red,
+            width: targetWidth * 0.78,
+            height: 400,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
@@ -84,8 +133,8 @@ class _QRCodePageState extends State<QRCodePage> {
               ],
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -104,10 +153,7 @@ class _QRCodePageState extends State<QRCodePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Destination'),
-      ),
-      body: SafeArea(child: _buildQRCodeSection(context)),
+      body: _buildQRCodeSection(context),
     );
   }
 }

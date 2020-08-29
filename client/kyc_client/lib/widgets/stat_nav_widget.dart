@@ -10,7 +10,7 @@ class StatisticsWidget extends StatelessWidget {
         Column(
           children: [
             Container(
-              height: targetWidth * 0.25,
+              height: targetWidth * 0.20,
               decoration: BoxDecoration(
                 gradient: LinearGradient(colors: [
                   Color(0xFF00B686),
