@@ -16,6 +16,8 @@ class _AuthScreenState extends State<AuthScreen> {
   TextEditingController _smsCodeController = TextEditingController();
   AuthMode authMode = AuthMode.login;
   String _countryCode = '+256';
+  String _selectedCountry = 'Uganda';
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   Future<bool> validateUserPhone(
     String phone,
@@ -171,6 +173,7 @@ class _AuthScreenState extends State<AuthScreen> {
                             onChanged: (code) {
                               setState(() {
                                 _countryCode = code.dialCode;
+                                _selectedCountry = code.name.toString();
                               });
                             },
                           ),
@@ -180,10 +183,21 @@ class _AuthScreenState extends State<AuthScreen> {
                           width: 5,
                         ),
                         Expanded(
-                          child: TextFormField(
-                            controller: _phoneController,
-                            keyboardType: TextInputType.phone,
-                            decoration: InputDecoration(hintText: '771234567'),
+                          child: Form(
+                            autovalidate: true,
+                            key: _formKey,
+                            child: TextFormField(
+                              controller: _phoneController,
+                              keyboardType: TextInputType.phone,
+                              decoration:
+                                  InputDecoration(hintText: '771234567'),
+                              validator: (value) {
+                                if (value.isEmpty || value.length < 9) {
+                                  return 'Invalid Phone Number!';
+                                }
+                                return null;
+                              },
+                            ),
                           ),
                         ),
                       ],
@@ -193,11 +207,18 @@ class _AuthScreenState extends State<AuthScreen> {
                     ),
                     RaisedButton(
                       onPressed: () {
-                        Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(
-                            builder: (contex) => AdditionalInfoPage(),
-                          ),
-                        );
+                        if (!_formKey.currentState.validate()) {
+                          return;
+                        } else {
+                          Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(
+                              builder: (contex) => AdditionalInfoPage(
+                                  phone: _phoneController.text,
+                                  countrycode: _countryCode,
+                                  country: _selectedCountry),
+                            ),
+                          );
+                        }
                       },
                       child: Text('Signup'),
                     ),
