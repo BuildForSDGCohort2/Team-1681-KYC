@@ -1,5 +1,10 @@
+import 'dart:io';
+
+import 'package:country_list_pick/country_list_pick.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:kyc_client/db/databaseProvider.dart';
 import 'package:kyc_client/models/user.dart';
 import 'package:kyc_client/screen/home_screen.dart';
@@ -7,7 +12,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class AdditionalInfoPage extends StatefulWidget {
   final String phone;
-  AdditionalInfoPage({this.phone});
+  final String countrycode;
+  final String country;
+  AdditionalInfoPage({this.phone, this.countrycode, this.country});
   @override
   State<StatefulWidget> createState() {
     return _AdditionalInfoPageState();
@@ -19,6 +26,8 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
   int _currentStep = 0;
   bool _obscureText = true;
   bool _isLoading = false;
+  File _selectedImage;
+
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   final Map<String, String> _formData = {
@@ -26,7 +35,9 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
     'firstname': null,
     'lastname': null,
     'email': null,
-    'address': null,
+    'country': null,
+    'state': null,
+    'street': null,
   };
   bool passwordError = true,
       confirmationError = true,
@@ -41,7 +52,12 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
   @override
   void initState() {
     super.initState();
-    _formData['phone'] = widget.phone;
+    setState(() {
+      _formData['phone'] = widget.phone;
+      _countryController.text = widget.country;
+      print(widget.phone);
+      print(widget.country);
+    });
   }
 
   var _passwordState = StepState.indexed;
@@ -50,8 +66,9 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
   var _addressState = StepState.indexed;
   var _profilePicState = StepState.indexed;
 
-  final GlobalKey<ScaffoldState> _scafoldKey = GlobalKey<ScaffoldState>();
+  final scaffoldState = GlobalKey<ScaffoldState>();
   final _passwordFocusNode = FocusNode();
+  final _confirmPasswordFocusNode = FocusNode();
   final _firstNameFocusNode = FocusNode();
   final _lastNameFocusNode = FocusNode();
   final _emailFocusNode = FocusNode();
@@ -60,12 +77,91 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
   final _streetFocusNode = FocusNode();
 
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _countryController = TextEditingController();
   final TextEditingController _stateController = TextEditingController();
   final TextEditingController _streetController = TextEditingController();
+
+  void _openImagePicker(BuildContext context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return Container(
+            height: 150,
+            padding: EdgeInsets.all(10),
+            child: Column(
+              children: [
+                Text(
+                  'Please Pick /Take an Image',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                FlatButton(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.camera_alt),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Text('Use Camera'),
+                      ],
+                    ),
+                    onPressed: () {
+                      _getImage(context, ImageSource.camera);
+                    }),
+                FlatButton(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.image),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Text('From Gallery'),
+                      ],
+                    ),
+                    onPressed: () {
+                      _getImage(context, ImageSource.gallery);
+                    }),
+              ],
+            ),
+          );
+        });
+  }
+
+  void _getImage(BuildContext context, ImageSource source) async {
+    File imageFile = await ImagePicker.pickImage(source: source, maxWidth: 400);
+
+    File croppedFile = await ImageCropper.cropImage(
+        sourcePath: imageFile.path,
+        aspectRatioPresets: [
+          CropAspectRatioPreset.square,
+          CropAspectRatioPreset.ratio3x2,
+          CropAspectRatioPreset.original,
+          CropAspectRatioPreset.ratio4x3,
+          CropAspectRatioPreset.ratio16x9
+        ],
+        androidUiSettings: AndroidUiSettings(
+            toolbarTitle: 'Cropper',
+            toolbarColor: Colors.deepOrange,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.original,
+            lockAspectRatio: false),
+        iosUiSettings: IOSUiSettings(
+          minimumAspectRatio: 1.0,
+        ));
+    setState(() {
+      _selectedImage = croppedFile;
+    });
+    Navigator.pop(context);
+  }
 
   Widget _buildpasswordTextFormField() {
     return TextFormField(
@@ -85,7 +181,8 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
       },
       onChanged: (String value) {
         _formData['password'] = value;
-        if (_passwordController.text.length < 2) {
+        if (_passwordController.text.length < 6 ||
+            _passwordController.text != _confirmPasswordController.text) {
           setState(() {
             passwordError = true;
             _passwordState = StepState.error;
@@ -102,6 +199,8 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
 
   Widget _buildconfirmpasswordTextFormField() {
     return TextFormField(
+      controller: _confirmPasswordController,
+      focusNode: _confirmPasswordFocusNode,
       decoration: InputDecoration(
         hintText: 'Confirm Password',
         prefixIcon: Icon(
@@ -115,7 +214,7 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
         return null;
       },
       onChanged: (String value) {
-        if (value.length < 2) {
+        if (value.length < 6 || value != _passwordController.text) {
           setState(() {
             confirmationError = true;
             _passwordState = StepState.error;
@@ -207,7 +306,7 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
       ),
       validator: (value) {
         if (value.isEmpty || !EmailValidator.validate(value)) {
-          return 'email should be at least 2 charatcers';
+          return 'Email should be at least 2 charatcers';
         }
         return null;
       },
@@ -230,35 +329,24 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
   }
 
   Widget _buildCountryTextFormField() {
-    return TextFormField(
-      focusNode: _countryFocusNode,
-      controller: _countryController,
-      decoration: InputDecoration(
-        hintText: 'Country',
-        prefixIcon: Icon(
-          Icons.phone,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        CountryListPick(
+          isShowFlag: true,
+          isShowTitle: false,
+          isShowCode: false,
+          isDownIcon: true,
+          initialSelection: widget.countrycode,
+          showEnglishName: true,
+          onChanged: (code) {
+            setState(() {
+              _countryController.text = code.name;
+            });
+          },
         ),
-      ),
-      validator: (value) {
-        if (value.isEmpty || value.length < 2) {
-          return 'Country should be at least 2 characters long';
-        }
-        return null;
-      },
-      onChanged: (String value) {
-        _formData['country'] = value;
-        if (value.length != 10) {
-          setState(() {
-            countryError = true;
-            _addressState = StepState.error;
-          });
-        } else {
-          countryError = false;
-          setState(() {
-            _addressState = StepState.complete;
-          });
-        }
-      },
+        Text(_countryController.text),
+      ],
     );
   }
 
@@ -269,9 +357,7 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
       controller: _stateController,
       decoration: InputDecoration(
         hintText: 'Sate/District',
-        prefixIcon: Icon(
-          Icons.phone,
-        ),
+        prefixIcon: Icon(Icons.home),
       ),
       validator: (value) {
         if (value.isEmpty || value.length < 2) {
@@ -281,7 +367,7 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
       },
       onChanged: (String value) {
         _formData['state'] = value;
-        if (value.length != 10) {
+        if (value.length < 2) {
           setState(() {
             stateError = true;
             _addressState = StepState.error;
@@ -304,7 +390,7 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
       decoration: InputDecoration(
         hintText: 'Street',
         prefixIcon: Icon(
-          Icons.phone,
+          Icons.streetview,
         ),
       ),
       validator: (value) {
@@ -315,7 +401,7 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
       },
       onChanged: (String value) {
         _formData['street'] = value;
-        if (value.length != 10) {
+        if (value.length < 2) {
           setState(() {
             streetError = true;
             _addressState = StepState.error;
@@ -330,36 +416,29 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
     );
   }
 
-  Widget _buildProfilePicImageField() {
-    return TextFormField(
-      // focusNode: _profileFocusNode,
-      // controller: _profileController,
-      decoration: InputDecoration(
-        hintText: 'Street',
-        prefixIcon: Icon(
-          Icons.phone,
-        ),
+  Widget _buildProfilePicImageField(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        _openImagePicker(context);
+      },
+      child: Row(
+        children: [
+          _selectedImage == null
+              ? Image.asset(
+                  'assets/images/placeholder.png',
+                  width: 100,
+                  height: 100,
+                  fit: BoxFit.cover,
+                )
+              : Image.file(
+                  _selectedImage,
+                  width: 100,
+                  height: 100,
+                  fit: BoxFit.cover,
+                  alignment: Alignment.topCenter,
+                ),
+        ],
       ),
-      validator: (value) {
-        if (value.isEmpty || value.length < 2) {
-          return 'Street should be at least 2 characters long';
-        }
-        return null;
-      },
-      onChanged: (String value) {
-        _formData['street'] = value;
-        if (value.length != 10) {
-          setState(() {
-            profilePicError = true;
-            _addressState = StepState.error;
-          });
-        } else {
-          profilePicError = false;
-          setState(() {
-            _addressState = StepState.complete;
-          });
-        }
-      },
     );
   }
 
@@ -370,76 +449,78 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
         emailError ||
         countryError ||
         stateError ||
-        streetError ||
-        profilePicError) {
+        streetError) {
       return false;
     }
     return true;
   }
 
-  // void _submitForm() async {
-  //   if (!inputValid() || !_formKey.currentState.validate()) {
-  //     print('Error Occured');
-  //     // Scaffold.of(context).showSnackBar(
-  //     //   SnackBar(
-  //     //     content: Text('You have invalid inputs'),
-  //     //   ),
-  //     // );
-  //   }
-  //   setState(() {
-  //     _isLoading = true;
-  //   });
-  //   final additionalInfoSuccess = await api.registerUser(User(
-  //     phone: _formData['phone'],
-  //     email: _formData['email'],
-  //     firstname: _formData['firstname'],
-  //     lastname: _formData['lastname'],
-  //     password: _formData['password'],
-  //     address: _formData['address'],
-  //   ));
-  //   // Change Loading State
-  //   setState(
-  //     () {
-  //       _isLoading = false;
-  //     },
-  //   );
+  void _submitForm() async {
+    print(_formData);
+    // if (!inputValid() || !_formKey.currentState.validate()) {
+    //   print('Error Occured');
+    //   // Scaffold.of(context).showSnackBar(
+    //   //   SnackBar(
+    //   //     content: Text('You have invalid inputs'),
+    //   //   ),
+    //   // );
+    // }
+    // setState(() {
+    //   _isLoading = true;
+    // });
+    // final additionalInfoSuccess = await api.registerUser(User(
+    //   phone: _formData['phone'],
+    //   email: _formData['email'],
+    //   firstname: _formData['firstname'],
+    //   lastname: _formData['lastname'],
+    //   password: _formData['password'],
+    //   country: _countryController.text,
+    //   state: _formData['state'],
+    //   street: _formData['street'],
+    // ));
+    // // Change Loading State
+    // setState(
+    //   () {
+    //     _isLoading = false;
+    //   },
+    // );
 
-  //   if (additionalInfoSuccess.containsKey('data')) {
-  //     Navigator.pushReplacement(
-  //       context,
-  //       MaterialPageRoute(
-  //         builder: (BuildContext context) {
-  //           // setSharedPreferences(User.fromJson(additionalInfoSuccess['data']));
-  //           return _isLoading
-  //               ? Center(
-  //                   child: CircularProgressIndicator(),
-  //                 )
-  //               : HomeScreen();
-  //         },
-  //       ),
-  //     );
-  //   } else {
-  //     showDialog(
-  //       context: context,
-  //       builder: (BuildContext context) {
-  //         return AlertDialog(
-  //           title: Text('Account Error'),
-  //           content: Text(additionalInfoSuccess['error']),
-  //           actions: <Widget>[
-  //             FlatButton(
-  //               child: Text('Okay'),
-  //               onPressed: () {
-  //                 Navigator.of(context).pop();
-  //               },
-  //             )
-  //           ],
-  //         );
-  //       },
-  //     );
-  //   }
+    // if (additionalInfoSuccess.containsKey('data')) {
+    //   Navigator.pushReplacement(
+    //     context,
+    //     MaterialPageRoute(
+    //       builder: (BuildContext context) {
+    //         // setSharedPreferences(User.fromJson(additionalInfoSuccess['data']));
+    //         return _isLoading
+    //             ? Center(
+    //                 child: CircularProgressIndicator(),
+    //               )
+    //             : HomeScreen();
+    //       },
+    //     ),
+    //   );
+    // } else {
+    //   showDialog(
+    //     context: context,
+    //     builder: (BuildContext context) {
+    //       return AlertDialog(
+    //         title: Text('Account Error'),
+    //         content: Text(additionalInfoSuccess['error']),
+    //         actions: <Widget>[
+    //           FlatButton(
+    //             child: Text('Okay'),
+    //             onPressed: () {
+    //               Navigator.of(context).pop();
+    //             },
+    //           )
+    //         ],
+    //       );
+    //     },
+    //   );
+    // }
 
-  //   // widget.loginUser(context, user);
-  // }
+    // widget.loginUser(context, user);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -476,7 +557,7 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
                   key: _formKey,
                   autovalidate: true,
                   child: Stepper(
-                    steps: _detailStepper(),
+                    steps: _detailStepper(context),
                     type: StepperType.vertical,
                     physics: ClampingScrollPhysics(),
                     currentStep: this._currentStep,
@@ -491,10 +572,15 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
                       setState(
                         () {
                           if (this._currentStep <
-                              this._detailStepper().length - 1) {
+                              this._detailStepper(context).length - 1) {
                             this._currentStep = this._currentStep + 1;
                           } else {
                             // _submitForm();
+                            Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(builder: (context) {
+                                return HomeScreen();
+                              }),
+                            );
                           }
                         },
                       );
@@ -520,7 +606,7 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
     );
   }
 
-  List<Step> _detailStepper() {
+  List<Step> _detailStepper(BuildContext context) {
     List<Step> _steps = [
       Step(
         title: Text('Security'),
@@ -532,7 +618,7 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
           ],
         ),
         isActive: _currentStep >= 0,
-        state: _nameState,
+        state: _passwordState,
       ),
       Step(
         title: Text('Name'),
@@ -567,14 +653,14 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
             _buildStreetTextFormField(),
           ],
         ),
-        isActive: _currentStep >= 2,
+        isActive: _currentStep >= 3,
         state: _emailState,
       ),
       Step(
         title: Text('Avartar'),
         content: Column(
           children: <Widget>[
-            _buildProfilePicImageField(),
+            _buildProfilePicImageField(context),
           ],
         ),
         isActive: _currentStep >= 4,

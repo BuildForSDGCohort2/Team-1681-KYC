@@ -15,79 +15,82 @@ class _ScanBarCodeState extends State<ScanBarCode> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: Stack(
-          children: <Widget>[
-            QRView(
-              key: _qrCodeKey,
-              overlay: QrScannerOverlayShape(
-                borderColor: Colors.white,
+    return Scaffold(
+      body: SafeArea(
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.green,
+          ),
+          child: Stack(
+            children: <Widget>[
+              QRView(
+                key: _qrCodeKey,
+                overlay: QrScannerOverlayShape(
+                  borderColor: Colors.white,
+                ),
+                onQRViewCreated: (QRViewController controller) {
+                  this._qrcontroller = controller;
+                  controller.scannedDataStream.listen((val) {
+                    if (mounted) {
+                      _qrcontroller.dispose();
+                      Navigator.pop(context, val);
+                    }
+                  });
+                },
               ),
-              onQRViewCreated: (QRViewController controller) {
-                this._qrcontroller = controller;
-                controller.scannedDataStream.listen((val) {
-                  if (mounted) {
-                    _qrcontroller.dispose();
-                    Navigator.pop(context, val);
-                  }
-                });
-              },
-            ),
-            Align(
-              alignment: Alignment.topCenter,
-              child: Container(
-                margin: EdgeInsets.only(top: 60),
-                child: Text(
-                  'Scan Resulting QR Code',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+              Align(
+                alignment: Alignment.topCenter,
+                child: Container(
+                  margin: EdgeInsets.only(top: 60),
+                  child: Text(
+                    'Scan User QR Code',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: ButtonBar(
-                alignment: MainAxisAlignment.spaceAround,
-                children: <Widget>[
-                  IconButton(
-                    color: Colors.white,
-                    icon: Icon(
-                      _flashOn ? Icons.flash_on : Icons.flash_off,
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: ButtonBar(
+                  alignment: MainAxisAlignment.spaceAround,
+                  children: <Widget>[
+                    IconButton(
+                      color: Colors.white,
+                      icon: Icon(
+                        _flashOn ? Icons.flash_on : Icons.flash_off,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _flashOn = !_flashOn;
+                          _qrcontroller.toggleFlash();
+                        });
+                      },
                     ),
-                    onPressed: () {
-                      setState(() {
-                        _flashOn = !_flashOn;
-                        _qrcontroller.toggleFlash();
-                      });
-                      // _qrcontroller.toggleFlash();
-                    },
-                  ),
-                  IconButton(
-                    color: Colors.white,
-                    icon: Icon(
-                      _frontCamera ? Icons.camera_front : Icons.camera_rear,
+                    IconButton(
+                      color: Colors.white,
+                      icon: Icon(
+                        _frontCamera ? Icons.camera_front : Icons.camera_rear,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _frontCamera = !_frontCamera;
+                          _qrcontroller.flipCamera();
+                        });
+                      },
                     ),
-                    onPressed: () {
-                      setState(() {
-                        _frontCamera = !_frontCamera;
-                        _qrcontroller.flipCamera();
-                      });
-                      // _qrcontroller.flipCamera();
-                    },
-                  ),
-                  IconButton(
-                    color: Colors.white,
-                    icon: Icon(Icons.close),
-                    onPressed: () => Navigator.of(context).pop(),
-                  ),
-                ],
-              ),
-            )
-          ],
+                    IconButton(
+                      color: Colors.white,
+                      icon: Icon(Icons.close),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
