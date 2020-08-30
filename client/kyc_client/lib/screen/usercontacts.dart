@@ -92,90 +92,136 @@ class _UserContactsState extends State<UserContacts> {
       });
     }
     return Scaffold(
-      appBar: AppBar(
-        title: Text(' Contacts - ' + widget.type),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () {
-              showSearch(
-                  context: context, delegate: ContactSearch(selectedContacts));
-            },
-          ),
-        ],
-        centerTitle: true,
-      ),
       body: SafeArea(
-        child: ListView.builder(
-          itemBuilder: (BuildContext context, int index) {
-            final user = selectedContacts[index];
-            return ListTile(
-              leading: widget.type == 'Infected'
-                  ? _leading(selectedContacts[index])
-                  : Icon(Icons.compare_arrows),
-              title: Text(user.journeycode),
-              subtitle: Stack(
-                children: <Widget>[
-                  Positioned(
-                    child: Text(user.source),
-                  ),
-                  Positioned(
-                    top: -5,
-                    left: (MediaQuery.of(context).size.width * 0.63 / 3),
-                    child: Text(
-                      '...',
-                      style:
-                          TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  Positioned(
-                    left: (MediaQuery.of(context).size.width * 0.75 / 3),
-                    child: Container(
-                      padding: EdgeInsets.only(left: 10, right: 10),
-                      decoration: BoxDecoration(
-                        color: Colors.green,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Text(
-                        'To',
-                        style: TextStyle(color: Colors.white, fontSize: 11),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    top: -5,
-                    left: (MediaQuery.of(context).size.width * 0.50 / 3) * 2,
-                    child: Text(
-                      '...',
-                      style:
-                          TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  Positioned(
-                    left: (MediaQuery.of(context).size.width * 0.66 / 3) * 2,
-                    child: Text(user.destination),
-                  ),
-                ],
+        child: Column(
+          children: [
+            Container(
+              height: 65,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(colors: [
+                  Theme.of(context).primaryColor,
+                  Theme.of(context).accentColor,
+                ]),
               ),
-              trailing: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  Text(
-                    calculateDate(user.pickuptime),
-                    style: TextStyle(fontSize: 11),
-                  ),
-                  Text(
-                    TimeOfDay.fromDateTime(
-                            DateTime.parse(user.pickuptime).toLocal())
-                        .format(context)
-                        .toString(),
-                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
-                  ),
-                ],
+              child: Padding(
+                padding: const EdgeInsets.only(left: 20, right: 20),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          GestureDetector(
+                            onTap: () => Navigator.of(context).pop(),
+                            child: Icon(
+                              Icons.chevron_left,
+                              color: Colors.white,
+                            ),
+                          ),
+                          Text(
+                            'Contacts - ' + widget.type,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                            ),
+                          ),
+                          IconButton(
+                            icon: Icon(
+                              Icons.search,
+                              color: Colors.white,
+                            ),
+                            onPressed: () {
+                              showSearch(
+                                  context: context,
+                                  delegate: ContactSearch(selectedContacts));
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            );
-          },
-          itemCount: selectedContacts.length,
+            ),
+            Expanded(
+              child: ListView.builder(
+                itemBuilder: (BuildContext context, int index) {
+                  final user = selectedContacts[index];
+                  return ListTile(
+                    leading: widget.type == 'Infected'
+                        ? _leading(selectedContacts[index])
+                        : Icon(Icons.compare_arrows),
+                    title: Text(user.journeycode),
+                    subtitle: Stack(
+                      children: <Widget>[
+                        Positioned(
+                          child: Text(user.source),
+                        ),
+                        Positioned(
+                          top: -5,
+                          left: (MediaQuery.of(context).size.width * 0.63 / 3),
+                          child: Text(
+                            '...',
+                            style: TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        Positioned(
+                          left: (MediaQuery.of(context).size.width * 0.75 / 3),
+                          child: Container(
+                            padding: EdgeInsets.only(left: 10, right: 10),
+                            decoration: BoxDecoration(
+                              color: Colors.green,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Text(
+                              'To',
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 11),
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          top: -5,
+                          left: (MediaQuery.of(context).size.width * 0.50 / 3) *
+                              2,
+                          child: Text(
+                            '...',
+                            style: TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        Positioned(
+                          left: (MediaQuery.of(context).size.width * 0.66 / 3) *
+                              2,
+                          child: Text(user.destination),
+                        ),
+                      ],
+                    ),
+                    trailing: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: <Widget>[
+                        Text(
+                          calculateDate(user.pickuptime),
+                          style: TextStyle(fontSize: 11),
+                        ),
+                        Text(
+                          TimeOfDay.fromDateTime(
+                                  DateTime.parse(user.pickuptime).toLocal())
+                              .format(context)
+                              .toString(),
+                          style: TextStyle(
+                              fontSize: 11, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+                itemCount: selectedContacts.length,
+              ),
+            ),
+          ],
         ),
       ),
     );

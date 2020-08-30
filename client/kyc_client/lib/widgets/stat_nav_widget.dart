@@ -3,14 +3,12 @@ import 'package:flutter/material.dart';
 class StatisticsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final double devWidth = MediaQuery.of(context).size.width;
-    final double targetWidth = devWidth > 550.0 ? 500.0 : devWidth * 0.95;
     return Stack(
       children: [
         Column(
           children: [
             Container(
-              height: targetWidth * 0.20,
+              height: 65,
               decoration: BoxDecoration(
                 gradient: LinearGradient(colors: [
                   Color(0xFF00B686),
@@ -18,7 +16,7 @@ class StatisticsWidget extends StatelessWidget {
                 ]),
               ),
               child: Padding(
-                padding: EdgeInsets.only(top: 40, left: 20, right: 20),
+                padding: EdgeInsets.only(top: 20, left: 20, right: 20),
                 child: Column(
                   children: [
                     Row(

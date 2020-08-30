@@ -26,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _navPages[_selectedIndex],
+      body: SafeArea(child: _navPages[_selectedIndex]),
       bottomNavigationBar: Row(
         children: [
           _buildNavItem(

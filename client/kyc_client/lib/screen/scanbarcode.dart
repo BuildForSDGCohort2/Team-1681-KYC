@@ -15,14 +15,11 @@ class _ScanBarCodeState extends State<ScanBarCode> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: Container(
+    return Scaffold(
+      body: SafeArea(
+        child: Container(
           decoration: BoxDecoration(
-            gradient: LinearGradient(colors: [
-              Color(0xFF00B686),
-              Color(0xFF00838F),
-            ]),
+            color: Colors.green,
           ),
           child: Stack(
             children: <Widget>[
@@ -70,7 +67,6 @@ class _ScanBarCodeState extends State<ScanBarCode> {
                           _flashOn = !_flashOn;
                           _qrcontroller.toggleFlash();
                         });
-                        // _qrcontroller.toggleFlash();
                       },
                     ),
                     IconButton(
@@ -83,7 +79,6 @@ class _ScanBarCodeState extends State<ScanBarCode> {
                           _frontCamera = !_frontCamera;
                           _qrcontroller.flipCamera();
                         });
-                        // _qrcontroller.flipCamera();
                       },
                     ),
                     IconButton(

@@ -13,7 +13,8 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
         platform: TargetPlatform.iOS,
-        primarySwatch: Colors.orange,
+        primaryColor: Color(0xFF00B686),
+        accentColor: Color(0xFF00838F),
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: AuthScreen(),

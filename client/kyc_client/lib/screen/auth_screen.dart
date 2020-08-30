@@ -117,127 +117,133 @@ class _AuthScreenState extends State<AuthScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(colors: [
-            Color(0xFF00B686),
-            Color(0xFF00838F),
-          ]),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Container(
-                child: Column(
-                  children: [
-                    Text(
-                      'KYC',
-                      style: TextStyle(
-                        fontSize: 45,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: -1.2,
+      body: SafeArea(
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(colors: [
+              Color(0xFF00B686),
+              Color(0xFF00838F),
+            ]),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Container(
+                  child: Column(
+                    children: [
+                      Text(
+                        'KYC',
+                        style: TextStyle(
+                          fontSize: 45,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: -1.2,
+                        ),
                       ),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Text(
-                      'Know Your Contacts',
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: -1.2,
+                      SizedBox(
+                        height: 20,
                       ),
-                    ),
-                  ],
+                      Text(
+                        'Know Your Contacts',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: -1.2,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              Center(
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
+                Expanded(
+                  child: Center(
+                    child: ListView(
                       children: [
-                        SizedBox(
-                          child: CountryListPick(
-                            isShowFlag: true,
-                            isShowTitle: false,
-                            isShowCode: true,
-                            isDownIcon: false,
-                            initialSelection: _countryCode,
-                            showEnglishName: true,
-                            onChanged: (code) {
-                              setState(() {
-                                _countryCode = code.dialCode;
-                                _selectedCountry = code.name.toString();
-                              });
-                            },
-                          ),
-                          width: 130,
-                        ),
-                        SizedBox(
-                          width: 5,
-                        ),
-                        Expanded(
-                          child: Form(
-                            autovalidate: true,
-                            key: _formKey,
-                            child: TextFormField(
-                              controller: _phoneController,
-                              keyboardType: TextInputType.phone,
-                              decoration:
-                                  InputDecoration(hintText: '771234567'),
-                              validator: (value) {
-                                if (value.isEmpty || value.length < 9) {
-                                  return 'Invalid Phone Number!';
-                                }
-                                return null;
-                              },
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                  child: CountryListPick(
+                                    isShowFlag: true,
+                                    isShowTitle: false,
+                                    isShowCode: true,
+                                    isDownIcon: false,
+                                    initialSelection: _countryCode,
+                                    showEnglishName: true,
+                                    onChanged: (code) {
+                                      setState(() {
+                                        _countryCode = code.dialCode;
+                                        _selectedCountry = code.name.toString();
+                                      });
+                                    },
+                                  ),
+                                  width: 130,
+                                ),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                Expanded(
+                                  child: Form(
+                                    autovalidate: true,
+                                    key: _formKey,
+                                    child: TextFormField(
+                                      controller: _phoneController,
+                                      keyboardType: TextInputType.phone,
+                                      decoration: InputDecoration(
+                                          hintText: '771234567'),
+                                      validator: (value) {
+                                        if (value.isEmpty || value.length < 9) {
+                                          return 'Invalid Phone Number!';
+                                        }
+                                        return null;
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            RaisedButton(
+                              onPressed: () {
+                                if (!_formKey.currentState.validate()) {
+                                  return;
+                                } else {
+                                  Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                      builder: (contex) => AdditionalInfoPage(
+                                          phone: _phoneController.text,
+                                          countrycode: _countryCode,
+                                          country: _selectedCountry),
+                                    ),
+                                  );
+                                }
+                              },
+                              child: Text('Signup'),
+                            ),
+                            SizedBox(
+                              height: 20,
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                print('Forgotten Password');
+                              },
+                              child: Text('Forgot Password?'),
+                            )
+                          ],
                         ),
                       ],
                     ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    RaisedButton(
-                      onPressed: () {
-                        if (!_formKey.currentState.validate()) {
-                          return;
-                        } else {
-                          Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(
-                              builder: (contex) => AdditionalInfoPage(
-                                  phone: _phoneController.text,
-                                  countrycode: _countryCode,
-                                  country: _selectedCountry),
-                            ),
-                          );
-                        }
-                      },
-                      child: Text('Signup'),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              GestureDetector(
-                onTap: () {
-                  print('Forgotten Password');
-                },
-                child: Text('Forgot Password?'),
-              )
-            ],
+              ],
+            ),
           ),
         ),
       ),
