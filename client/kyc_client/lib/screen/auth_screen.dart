@@ -1,7 +1,6 @@
 import 'package:country_list_pick/country_list_pick.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:kyc_client/screen/home_screen.dart';
 import 'package:kyc_client/screen/user_info.dart';
 
 enum AuthMode { login, signup }
@@ -21,6 +20,8 @@ class _AuthScreenState extends State<AuthScreen> {
 
   Future<bool> validateUserPhone(
     String phone,
+    String country,
+    String countrycode,
     BuildContext context,
   ) async {
     // first check that the number is not in the database, then proceed to this
@@ -41,10 +42,13 @@ class _AuthScreenState extends State<AuthScreen> {
           // Navigate to the stepper to complet the profile
 
           // temporarily
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) {
-            // return StepperProfile();
-          }));
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) {
+              return AdditionalInfoPage(
+                  phone: phone, country: country, countrycode: countrycode);
+            }),
+          );
         }
       },
       verificationFailed: (AuthException exception) {
@@ -178,7 +182,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                     onChanged: (code) {
                                       setState(() {
                                         _countryCode = code.dialCode;
-                                        _selectedCountry = code.name.toString();
+                                        _selectedCountry = code.name;
                                       });
                                     },
                                   ),
@@ -223,6 +227,9 @@ class _AuthScreenState extends State<AuthScreen> {
                                           country: _selectedCountry),
                                     ),
                                   );
+                                  setState(() {
+                                    _phoneController.text = '';
+                                  });
                                 }
                               },
                               child: Text('Signup'),

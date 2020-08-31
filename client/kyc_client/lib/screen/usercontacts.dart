@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:kyc_client/api/databaseProvider.dart';
+import 'package:kyc_client/db/databaseProvider.dart';
 import 'package:kyc_client/models/contacttrace.dart';
 import 'package:kyc_client/screen/searchcontact.dart';
 import 'package:kyc_client/utils/calculatedate.dart';
@@ -66,7 +66,6 @@ class _UserContactsState extends State<UserContacts> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.type);
     if (widget.type == 'Today') {
       setState(() {
         widget.allcontacts.map((contact) {
@@ -145,81 +144,99 @@ class _UserContactsState extends State<UserContacts> {
               ),
             ),
             Expanded(
-              child: ListView.builder(
-                itemBuilder: (BuildContext context, int index) {
-                  final user = selectedContacts[index];
-                  return ListTile(
-                    leading: widget.type == 'Infected'
-                        ? _leading(selectedContacts[index])
-                        : Icon(Icons.compare_arrows),
-                    title: Text(user.journeycode),
-                    subtitle: Stack(
-                      children: <Widget>[
-                        Positioned(
-                          child: Text(user.source),
-                        ),
-                        Positioned(
-                          top: -5,
-                          left: (MediaQuery.of(context).size.width * 0.63 / 3),
-                          child: Text(
-                            '...',
-                            style: TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        Positioned(
-                          left: (MediaQuery.of(context).size.width * 0.75 / 3),
-                          child: Container(
-                            padding: EdgeInsets.only(left: 10, right: 10),
-                            decoration: BoxDecoration(
-                              color: Colors.green,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Text(
-                              'To',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 11),
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          top: -5,
-                          left: (MediaQuery.of(context).size.width * 0.50 / 3) *
-                              2,
-                          child: Text(
-                            '...',
-                            style: TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        Positioned(
-                          left: (MediaQuery.of(context).size.width * 0.66 / 3) *
-                              2,
-                          child: Text(user.destination),
-                        ),
-                      ],
-                    ),
-                    trailing: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: <Widget>[
-                        Text(
-                          calculateDate(user.pickuptime),
-                          style: TextStyle(fontSize: 11),
-                        ),
-                        Text(
-                          TimeOfDay.fromDateTime(
-                                  DateTime.parse(user.pickuptime).toLocal())
-                              .format(context)
-                              .toString(),
-                          style: TextStyle(
-                              fontSize: 11, fontWeight: FontWeight.bold),
-                        ),
-                      ],
+              child: Builder(builder: (context) {
+                if (selectedContacts.length == 0) {
+                  return Center(
+                    child: Text(
+                      'There are currently no contacts to show!',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        color: Colors.grey[600],
+                      ),
                     ),
                   );
-                },
-                itemCount: selectedContacts.length,
-              ),
+                }
+                return ListView.builder(
+                  itemBuilder: (BuildContext context, int index) {
+                    final user = selectedContacts[index];
+                    return ListTile(
+                      leading: widget.type == 'Infected'
+                          ? _leading(selectedContacts[index])
+                          : Icon(Icons.compare_arrows),
+                      title: Text(user.journeycode),
+                      subtitle: Stack(
+                        children: <Widget>[
+                          Positioned(
+                            child: Text(user.source),
+                          ),
+                          Positioned(
+                            top: -5,
+                            left:
+                                (MediaQuery.of(context).size.width * 0.63 / 3),
+                            child: Text(
+                              '...',
+                              style: TextStyle(
+                                  fontSize: 14, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          Positioned(
+                            left:
+                                (MediaQuery.of(context).size.width * 0.75 / 3),
+                            child: Container(
+                              padding: EdgeInsets.only(left: 10, right: 10),
+                              decoration: BoxDecoration(
+                                color: Colors.green,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Text(
+                                'To',
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 11),
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            top: -5,
+                            left:
+                                (MediaQuery.of(context).size.width * 0.50 / 3) *
+                                    2,
+                            child: Text(
+                              '...',
+                              style: TextStyle(
+                                  fontSize: 14, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          Positioned(
+                            left:
+                                (MediaQuery.of(context).size.width * 0.66 / 3) *
+                                    2,
+                            child: Text(user.destination),
+                          ),
+                        ],
+                      ),
+                      trailing: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: <Widget>[
+                          Text(
+                            calculateDate(user.pickuptime),
+                            style: TextStyle(fontSize: 11),
+                          ),
+                          Text(
+                            TimeOfDay.fromDateTime(
+                                    DateTime.parse(user.pickuptime).toLocal())
+                                .format(context)
+                                .toString(),
+                            style: TextStyle(
+                                fontSize: 11, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                  itemCount: selectedContacts.length,
+                );
+              }),
             ),
           ],
         ),

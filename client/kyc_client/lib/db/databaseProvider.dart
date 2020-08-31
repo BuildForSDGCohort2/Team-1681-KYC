@@ -15,6 +15,7 @@ class DatabaseProvider extends ChangeNotifier {
   static const String COLUMN_SOURCE = 'source';
   static const String COLUMN_DESTINATION = 'destination';
   static const String COLUMN_PICKUPTIME = 'pickuptime';
+  static const String COLUMN_PICKUPDATE = 'pickupdate';
   static const String COLUMN_INFECTED = 'infected';
   static const String COLUMN_UPLOADED = 'uploaded';
 
@@ -53,6 +54,7 @@ class DatabaseProvider extends ChangeNotifier {
       $COLUMN_SOURCE TEXT NOT NULL,
       $COLUMN_DESTINATION TEXT NOT NULL,
       $COLUMN_PICKUPTIME TEXT NOT NULL,
+      $COLUMN_PICKUPDATE TEXT NOT NULL,
       $COLUMN_INFECTED INTEGER NOT NULL,
       $COLUMN_UPLOADED INTEGER NOT NULL
       )''');
@@ -60,8 +62,14 @@ class DatabaseProvider extends ChangeNotifier {
 
   // All Contacts
   List<ContactTrace> contactList = List<ContactTrace>();
+  List<ContactTrace> contactsToday = List<ContactTrace>();
+  List<ContactTrace> contactsInfected = List<ContactTrace>();
 
-  Future<List<ContactTrace>> getJourneys() async {
+  List<ContactTrace> get allcontacts => contactList;
+  List<ContactTrace> get today => contactsToday;
+  List<ContactTrace> get infected => contactsInfected;
+
+  void getJourneys() async {
     final db = await database;
     List<Map<String, dynamic>> contacts = await db.query(TABLE_NAME, columns: [
       COLUMN_ID,
@@ -79,35 +87,45 @@ class DatabaseProvider extends ChangeNotifier {
       ContactTrace contact = ContactTrace.fromJson(currentContact);
       contactList.add(contact);
     });
-    return contactList;
+    notifyListeners();
   }
 
   // Create Contact
 
-  Future<int> insert(ContactTrace newContact) async {
+  void insert(ContactTrace newContact) async {
     final db = await database;
     newContact.id = await db.insert(TABLE_NAME, newContact.toJson());
     contactList.add(newContact);
+    contactsToday.add(newContact);
     notifyListeners();
-    return newContact.id;
   }
 
-  Future<List<Map<String, dynamic>>> getAllContacts() async {
+  void getAllContacts() async {
     final db = await database;
-    return await db.query(TABLE_NAME);
+    final contacts = await db.query(TABLE_NAME);
+    contacts
+        .map((contact) => contactList.add(ContactTrace.fromJson(contact)))
+        .toList();
+    notifyListeners();
   }
 
-  Future<List<Map<String, dynamic>>> getTodayContacts(String pickuptime) async {
+  void getTodayContacts(String pickuptime) async {
     final db = await database;
-    return await db.query(TABLE_NAME,
-        where:
-            "${DateTime.parse(pickuptime).toLocal().toString().substring(0, 11)}. in ?",
-        whereArgs: [pickuptime]);
+    final contacts = await db.query(TABLE_NAME,
+        where: "pickupdate = ?", whereArgs: [pickuptime.substring(0, 10)]);
+    contacts
+        .map((contact) => contactsToday.add(ContactTrace.fromJson(contact)))
+        .toList();
+    notifyListeners();
   }
 
-  Future<List<Map<String, dynamic>>> getInfectedContacts(bool infected) async {
+  void getInfectedContacts() async {
     final db = await database;
-    return await db
-        .query(TABLE_NAME, where: "infected ==?", whereArgs: [infected]);
+    final contacts =
+        await db.query(TABLE_NAME, where: "infected ==?", whereArgs: [1]);
+    contacts
+        .map((contact) => contactsInfected.add(ContactTrace.fromJson(contact)))
+        .toList();
+    notifyListeners();
   }
 }

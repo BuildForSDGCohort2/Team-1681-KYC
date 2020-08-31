@@ -4,13 +4,50 @@ import 'package:kyc_client/widgets/top_nav.dart';
 class SettingWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Stack(
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
-        TopNav(
-          title: 'Settings',
+        Stack(
+          children: [
+            TopNav(
+              title: 'Settings',
+            ),
+          ],
         ),
-        Center(
-          child: Text('Settings Page'),
+        Expanded(
+          child: ListView(
+            children: [
+              Padding(
+                padding: EdgeInsets.all(8),
+                child: Column(
+                  children: [
+                    Card(
+                      margin: EdgeInsets.all(10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Icon(Icons.settings),
+                          SizedBox(width: 20),
+                          Expanded(child: Text('second task')),
+                        ],
+                      ),
+                    ),
+                    Card(
+                      margin: EdgeInsets.all(10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Icon(Icons.outlined_flag),
+                          SizedBox(width: 20),
+                          Expanded(child: Text('second task')),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         )
       ],
     );
