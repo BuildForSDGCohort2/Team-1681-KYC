@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:kyc_client/db/databaseProvider.dart';
 import 'package:kyc_client/models/user.dart';
 import 'package:kyc_client/screen/home_screen.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AdditionalInfoPage extends StatefulWidget {
@@ -578,7 +579,10 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
                             // _submitForm();
                             Navigator.of(context).pushReplacement(
                               MaterialPageRoute(builder: (context) {
-                                return HomeScreen();
+                                return ChangeNotifierProvider<DatabaseProvider>(
+                                  create: (context) => DatabaseProvider.db,
+                                  child: HomeScreen(),
+                                );
                               }),
                             );
                           }

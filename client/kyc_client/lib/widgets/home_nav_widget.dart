@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:kyc_client/db/databaseProvider.dart';
+import 'package:kyc_client/models/contacttrace.dart';
 import 'package:kyc_client/screen/usercontacts.dart';
 import 'package:kyc_client/widgets/top_nav.dart';
+import 'package:provider/provider.dart';
 
 class HomeWidget extends StatefulWidget {
   @override
@@ -42,23 +45,29 @@ class _HomeWidgetState extends State<HomeWidget> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  buildContactSummary(
-                    icon: Icons.today,
-                    label: 'Today',
-                    data: 1200,
-                    iconColor: Color(0xFF00b300),
+                  Consumer<DatabaseProvider>(
+                    builder: (context, data, child) => buildContactSummary(
+                      icon: Icons.today,
+                      label: 'Today',
+                      data: data.contactsToday,
+                      iconColor: Color(0xFF00b300),
+                    ),
                   ),
-                  buildContactSummary(
-                    icon: Icons.people_outline,
-                    label: 'All Contacts',
-                    data: 20,
-                    iconColor: Color(0xFFffa500),
+                  Consumer<DatabaseProvider>(
+                    builder: (context, data, child) => buildContactSummary(
+                      icon: Icons.people_outline,
+                      label: 'All Contacts',
+                      data: data.contactList,
+                      iconColor: Color(0xFFffa500),
+                    ),
                   ),
-                  buildContactSummary(
-                    icon: Icons.mood_bad,
-                    label: 'Infected',
-                    data: 0,
-                    iconColor: Color(0xFFb33636),
+                  Consumer<DatabaseProvider>(
+                    builder: (context, data, child) => buildContactSummary(
+                      icon: Icons.mood_bad,
+                      label: 'Infected',
+                      data: data.contactsInfected,
+                      iconColor: Color(0xFFb33636),
+                    ),
                   ),
                 ],
               ),
@@ -68,13 +77,13 @@ class _HomeWidgetState extends State<HomeWidget> {
   }
 
   InkWell buildContactSummary(
-      {IconData icon, String label, int data, Color iconColor}) {
+      {IconData icon, String label, List<ContactTrace> data, Color iconColor}) {
     return InkWell(
       onTap: () {
         Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => UserContacts(
                   type: label,
-                  allcontacts: [],
+                  allcontacts: data,
                 )));
       },
       child: Container(
@@ -114,7 +123,7 @@ class _HomeWidgetState extends State<HomeWidget> {
               ),
               child: Center(
                 child: Text(
-                  data.toString(),
+                  data.length.toString(),
                   style: TextStyle(color: Colors.white),
                 ),
               ),

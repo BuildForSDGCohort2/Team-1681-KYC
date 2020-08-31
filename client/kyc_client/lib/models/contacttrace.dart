@@ -1,4 +1,4 @@
-import 'package:kyc_client/api/databaseProvider.dart';
+import 'package:kyc_client/db/databaseProvider.dart';
 
 class ContactTrace {
   int id;
@@ -8,6 +8,7 @@ class ContactTrace {
   String source;
   String destination;
   String pickuptime;
+  String pickupdate;
   bool infected;
   bool uploaded;
 
@@ -19,6 +20,7 @@ class ContactTrace {
     this.source,
     this.destination,
     this.pickuptime,
+    this.pickupdate,
     this.infected,
     this.uploaded,
   });
@@ -31,6 +33,7 @@ class ContactTrace {
     source = jsonData[DatabaseProvider.COLUMN_SOURCE];
     destination = jsonData[DatabaseProvider.COLUMN_DESTINATION];
     pickuptime = jsonData[DatabaseProvider.COLUMN_PICKUPTIME];
+    pickupdate = jsonData[DatabaseProvider.COLUMN_PICKUPDATE];
     infected = jsonData[DatabaseProvider.COLUMN_INFECTED] == 1;
     uploaded = jsonData[DatabaseProvider.COLUMN_UPLOADED] == 1;
   }
@@ -43,6 +46,7 @@ class ContactTrace {
       DatabaseProvider.COLUMN_SOURCE: source,
       DatabaseProvider.COLUMN_DESTINATION: destination,
       DatabaseProvider.COLUMN_PICKUPTIME: pickuptime,
+      DatabaseProvider.COLUMN_PICKUPDATE: pickupdate,
       DatabaseProvider.COLUMN_INFECTED: infected ? 1 : 0,
       DatabaseProvider.COLUMN_UPLOADED: uploaded ? 1 : 0,
     };

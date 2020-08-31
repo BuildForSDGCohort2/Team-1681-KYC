@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
-import 'package:kyc_client/api/databaseProvider.dart';
+import 'package:kyc_client/db/databaseProvider.dart';
+import 'package:kyc_client/models/contacttrace.dart';
 import 'package:kyc_client/screen/scanbarcode.dart';
 import 'package:kyc_client/widgets/home_nav_widget.dart';
 import 'package:kyc_client/widgets/reports_nav_widget.dart';
 import 'package:kyc_client/widgets/settings_nav_widget.dart';
 import 'package:kyc_client/widgets/stat_nav_widget.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -16,17 +18,39 @@ class _HomeScreenState extends State<HomeScreen> {
   final dbprovider = DatabaseProvider.db;
   int _selectedIndex = 0;
 
+  Map<String, dynamic> userdata = {
+    'journeycode': 'TEST3',
+    'rider': 'Keller',
+    'client': 'Atim',
+    'source': 'Makerere',
+    'destination': 'Kawempe',
+    'pickuptime': DateTime.now().toUtc().toString(),
+    'pickupdate': DateTime.now().toUtc().toString().substring(0, 10),
+    'infected': true,
+    'uploaded': true,
+  };
+
   List<Widget> _navPages = [
     HomeWidget(),
     ReportsWidget(),
     StatisticsWidget(),
     SettingWidget()
   ];
+  @override
+  void initState() {
+    super.initState();
+    final api = Provider.of<DatabaseProvider>(context, listen: false);
+    api.getAllContacts();
+    api.getInfectedContacts();
+    api.getTodayContacts(DateTime.now().toString());
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(child: _navPages[_selectedIndex]),
+      body: SafeArea(
+        child: _navPages[_selectedIndex],
+      ),
       bottomNavigationBar: Row(
         children: [
           _buildNavItem(
@@ -55,11 +79,13 @@ class _HomeScreenState extends State<HomeScreen> {
           ? FloatingActionButton(
               backgroundColor: Color(0xFF00B686),
               onPressed: () async {
-                await Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => ScanBarCode(),
-                  ),
-                );
+                Provider.of<DatabaseProvider>(context, listen: false)
+                    .insert(ContactTrace.fromJson(userdata));
+                // await Navigator.of(context).push(
+                //   MaterialPageRoute(
+                //     builder: (context) => ScanBarCode(),
+                //   ),
+                // );
               },
               child: Icon(Icons.crop_free),
             )
