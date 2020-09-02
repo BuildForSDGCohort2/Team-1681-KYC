@@ -1,5 +1,9 @@
+"""Package managing the entire app
+It initializes the parameters needed for running the server and the vrious routes
+
+    """
+
 from flask import Flask
-# from flask_login import current_user, login_required
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager

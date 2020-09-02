@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask_login import login_required
 from covidtrackapi.models import Faq, Notification, Journey
 from covidtrackapi import db
+from covidtrackapi.users.utils import check_userdata
 
 main = Blueprint('main', __name__)
 
@@ -17,21 +18,7 @@ def journey():
     required_fields = ["carrier", "client",
                        "source", 'destination', 'starttime']
 
-    if not user_data:
-        response = {
-            'status': 'error',
-            "message": "Missing data"
-        }
-
-        return jsonify(response), 400
-
-    if not all(field for field in required_fields):
-        response = {
-            'status': 'error',
-            "message": "Required Fields Missing"
-        }
-
-        return jsonify(response), 400
+    check_userdata(user_data, required_fields)
 
     faq = Faq.query.filter_by(question=user_data['question']).first()
 
@@ -73,21 +60,7 @@ def contacts():
 
     required_fields = ["user_nin"]
 
-    if not user_data:
-        response = {
-            'status': 'error',
-            "message": "Missing User NIN"
-        }
-
-        return jsonify(response), 400
-
-    if not all(field for field in required_fields):
-        response = {
-            'status': 'error',
-            "message": "Required Fields Missing"
-        }
-
-        return jsonify(response), 400
+    check_userdata(user_data, required_fields)
 
     journeys_carrier = Journey.query.filter_by(
         carriernin=user_data['user_nin']).all()
@@ -123,21 +96,7 @@ def faqs():
 
         required_fields = ["question", "answer"]
 
-        if not user_data:
-            response = {
-                'status': 'error',
-                "message": "Missing data"
-            }
-
-            return jsonify(response), 400
-
-        if not all(field for field in required_fields):
-            response = {
-                'status': 'error',
-                "message": "Required Fields Missing"
-            }
-
-            return jsonify(response), 400
+        check_userdata(user_data, required_fields)
 
         faq = Faq.query.filter_by(question=user_data['question']).first()
 
@@ -196,21 +155,7 @@ def update_faq(faq_id):
 
     required_fields = ["question", "answer"]
 
-    if not user_data:
-        response = {
-            'status': 'error',
-            "message": "Missing data"
-        }
-
-        return jsonify(response), 400
-
-    if not all(field for field in required_fields):
-        response = {
-            'status': 'error',
-            "message": "Required Fields Missing"
-        }
-
-        return jsonify(response), 400
+    check_userdata(user_data, required_fields)
 
     faq = Faq.query.get_or_404(faq_id)
 
@@ -329,19 +274,7 @@ def change_read_status():
     user_data = request.get_json()
     required_fields = ["notification_id"]
 
-    if not user_data:
-        response = {
-            'status': 'error',
-            "message": "Missing data"
-        }
-        return jsonify(response), 400
-
-    if not all([field in user_data['notification_id'] for field in required_fields]):
-        response = {
-            'status': 'error',
-            "message": "Required Fields Missing"
-        }
-        return jsonify(response), 400
+    check_userdata(user_data, required_fields)
 
     notification_id = int(user_data['notification_id'])
 

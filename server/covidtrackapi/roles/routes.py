@@ -4,6 +4,7 @@
 from flask import Blueprint, request, jsonify
 from covidtrackapi import db
 from covidtrackapi.models import Role
+from covidtrackapi.users.utils import check_userdata
 
 roles = Blueprint('roles', __name__)
 
@@ -18,19 +19,7 @@ def role():
         user_data = request.get_json()
         required_fields = ["name", "description"]
 
-        if not user_data:
-            response = {
-                'status': 'error',
-                "message": "Missing data"
-            }
-            return jsonify(response), 400
-
-        if not all(field for field in required_fields):
-            response = {
-                'status': 'error',
-                "message": "Required Fields Missing"
-            }
-            return jsonify(response), 400
+        check_userdata(user_data, required_fields)
 
         role_name = user_data['name']
         description = user_data['description']
@@ -124,19 +113,7 @@ def update_role(role_id):
 
     user_data = request.get_json()
     required_fields = ["name", "description"]
-    if not user_data:
-        response = {
-            'status': 'error',
-            "message": "Missing data"
-        }
-        return jsonify(response), 400
-
-    if not all(field for field in required_fields):
-        response = {
-            'status': 'error',
-            "message": "Required Fields Missing"
-        }
-        return jsonify(response), 400
+    check_userdata(user_data, required_fields)
 
     role = Role.query.filter_by(id=role_id).first()
 

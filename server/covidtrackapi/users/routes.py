@@ -22,19 +22,7 @@ def login():
     user_data = request.get_json()
     required_fields = ["phone", "password"]
 
-    if not user_data:
-        response = {
-            'status': 'error',
-            "message": "Missing data"
-        }
-        return jsonify(response), 400
-
-    if not all(field in user_data.keys() for field in required_fields):
-        response = {
-            'status': 'error',
-            "message": "Required Fields Missing"
-        }
-        return jsonify(response), 400
+    check_userdata(user_data, required_fields)
 
     user = User.query.filter_by(phone=user_data['phone']).first()
 
@@ -132,19 +120,7 @@ def create_user():
     required_fields = ["phone", "password", "email", "firstname",
                        "lastname", "country", "state", "street", "avartar"]
 
-    if not user_data:
-        response = {
-            'status': 'error',
-            "message": "Missing data"
-        }
-        return jsonify(response), 400
-
-    if not all(field in user_data.keys() for field in required_fields):
-        response = {
-            'status': 'error',
-            "message": "Required Fields Missing"
-        }
-        return jsonify(response), 400
+    check_userdata(user_data, required_fields)
 
     if len(user_data['phone']) != 10:
         response = {
@@ -178,7 +154,8 @@ def create_user():
 
     pass_hashed = bcrypt.generate_password_hash(password).decode('utf-8')
 
-    user = User(phone=phone, password=pass_hashed, roles=str(givenRole.id), firstname=firstname, lastname=lastname, email=email, avartar=avartar )
+    user = User(phone=phone, password=pass_hashed, roles=str(givenRole.id),
+                firstname=firstname, lastname=lastname, email=email, avartar=avartar)
 
     db.session.add(user)
 
@@ -240,19 +217,7 @@ def reset_request():
     user_data = request.get_json()
     required_fields = ["email"]
 
-    if not user_data:
-        response = {
-            'status': 'error',
-            "message": "Missing data"
-        }
-        return jsonify(response), 400
-
-    if not all(field for field in required_fields):
-        response = {
-            'status': 'error',
-            "message": "Required Fields Missing"
-        }
-        return jsonify(response), 400
+    check_userdata(user_data, required_fields)
 
     user = User.query.filter_by(email=user_data['email']).first()
 
@@ -424,20 +389,9 @@ def profile(userid):
 # @roles_required('admin','agent')
 def change_user_status():
     user_data = request.get_json()
-    if not user_data:
-        response = {
-            'status': 'error',
-            'message': 'Missing Data'
-        }
-        return jsonify(response)
     required_fields = ['action', 'user_id', 'current_user']
 
-    if not all([field in user_data.keys() for field in required_fields]):
-        response = {
-            'status': 'error',
-            'message': 'Required Data Missing'
-        }
-        return jsonify(response)
+    check_userdata(user_data, required_fields)
 
     user = User.query.filter_by(id=int(user_data['user_id'])).first()
 
@@ -470,21 +424,9 @@ def change_user_status():
 # @roles_required('admin')
 def add_contacts():
     user_data = request.get_json()
-    if not user_data:
-        response = {
-            'status': 'error',
-            'message': 'Missing Data'
-        }
-        return jsonify(response)
-
     required_fields = ['userid', 'users']
 
-    if not all([field in user_data.keys() for field in required_fields]):
-        response = {
-            'status': 'error',
-            'message': 'Required Data Missing'
-        }
-        return jsonify(response)
+    check_userdata(user_data, required_fields)
 
     rider = Journey.query.filter_by(rider=user_data['userid']).all()
     client = Journey.query.filter_by(client=user_data['userid']).all()
@@ -515,7 +457,7 @@ def add_contacts():
     except Exception as e:
         response = {
             'status': 'error',
-            'message': 'Error Performing Updates'
+            'message': 'Error Performing Updates. '+str(e)
         }
         return jsonify(response)
 
@@ -525,21 +467,9 @@ def add_contacts():
 # @roles_required('admin')
 def get_contacts():
     user_data = request.get_json()
-    if not user_data:
-        response = {
-            'status': 'error',
-            'message': 'Missing Data'
-        }
-        return jsonify(response)
-
     required_fields = ['userid']
 
-    if not all([field in user_data.keys() for field in required_fields]):
-        response = {
-            'status': 'error',
-            'message': 'Userid Required'
-        }
-        return jsonify(response)
+    check_userdata(user_data, required_fields)
 
     rider = Journey.query.filter_by(rider=user_data['userid']).all()
     client = Journey.query.filter_by(client=user_data['userid']).all()
