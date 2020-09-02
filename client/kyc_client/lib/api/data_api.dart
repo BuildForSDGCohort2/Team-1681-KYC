@@ -43,6 +43,9 @@ class DataAPI {
         id: parsedResponse['userId'],
         phone: formData['phone'],
         avartar: parsedResponse['avartar'],
+        lastname: parsedResponse['lastname'],
+        firstname: parsedResponse['firstname'],
+        email: parsedResponse['email'],
       );
     } else if (parsedResponse.containsKey('token')) {
       hasError = false;

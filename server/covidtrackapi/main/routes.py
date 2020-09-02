@@ -24,7 +24,7 @@ def new_contact():
 
     if not faq:
         try:
-            new_journey = UserConact(
+            new_journey = UserContact(
                 question=contact_user_data['question'], answer=contact_user_data['answer'])
             db.session.add(new_journey)
             db.session.commit()
