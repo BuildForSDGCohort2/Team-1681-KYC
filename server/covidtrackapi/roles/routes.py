@@ -16,13 +16,13 @@ roles = Blueprint('roles', __name__)
 def role():
 
     if request.method == 'POST':
-        user_data = request.get_json()
-        required_fields = ["name", "description"]
+        new_role_data = request.get_json()
+        new_role_fields = ["name", "description"]
 
-        check_userdata(user_data, required_fields)
+        check_userdata(new_role_data, new_role_fields)
 
-        role_name = user_data['name']
-        description = user_data['description']
+        role_name = new_role_data['name']
+        description = new_role_data['description']
 
         role = Role.query.filter_by(name=role_name.lower()).first()
         if role:
@@ -111,9 +111,9 @@ def del_role(role_id):
 # @roles_required('admin')
 def update_role(role_id):
 
-    user_data = request.get_json()
-    required_fields = ["name", "description"]
-    check_userdata(user_data, required_fields)
+    updated_role_data = request.get_json()
+    role_required_fields = ["name", "description"]
+    check_userdata(updated_role_data, role_required_fields)
 
     role = Role.query.filter_by(id=role_id).first()
 
@@ -125,7 +125,7 @@ def update_role(role_id):
 
         return jsonify(response)
 
-    if role.name == user_data['name'] and role.description == user_data['description']:
+    if role.name == updated_role_data['name'] and role.description == updated_role_data['description']:
         response = {
             "status": "error",
             "message": "No Changes Made"
@@ -133,8 +133,8 @@ def update_role(role_id):
 
         return jsonify(response)
 
-    role.name = user_data['name'].lower()
-    role.description = user_data['description']
+    role.name = updated_role_data['name'].lower()
+    role.description = updated_role_data['description']
 
     try:
         db.session.commit()

@@ -19,15 +19,15 @@ users = Blueprint('users', __name__)
 @users.route('/index')
 @users.route('/login', methods=['POST'])
 def login():
-    user_data = request.get_json()
-    required_fields = ["phone", "password"]
+    user_login_data = request.get_json()
+    required_login_fields = ["phone", "password"]
 
-    check_userdata(user_data, required_fields)
+    check_userdata(user_login_data, required_login_fields)
 
-    user = User.query.filter_by(phone=user_data['phone']).first()
+    user = User.query.filter_by(phone=user_login_data['phone']).first()
 
     if user:
-        if bcrypt.check_password_hash(user.password, user_data['password']):
+        if bcrypt.check_password_hash(user.password, user_login_data['password']):
             login_user(user)
             user_role = Role.query.filter_by(id=int(user.roles)).first().name
 
@@ -93,7 +93,7 @@ def login():
     else:
         response = {
             'status': 'error',
-            'message': 'No user with phone number {}. Please Register or Check your Login credentials'.format(user_data["phone"])
+            'message': 'No user with phone number {}. Please Register or Check your Login credentials'.format(user_login_data["phone"])
         }
         return jsonify(response)
 
@@ -116,13 +116,13 @@ def logout():
 @users.route('/users/register', methods=['POST'])
 def create_user():
     # take the user to the signin page
-    user_data = request.get_json()
+    user_registration_data = request.get_json()
     required_fields = ["phone", "password", "email", "firstname",
                        "lastname", "country", "state", "street", "avartar"]
 
-    check_userdata(user_data, required_fields)
+    check_userdata(user_registration_data, required_fields)
 
-    if len(user_data['phone']) != 10:
+    if len(user_registration_data['phone']) != 10:
         response = {
             'status': 'error',
             "message": "Invalid Phone Number"
@@ -131,26 +131,27 @@ def create_user():
 
     # Check if the user exist
 
-    existing_user = User.query.filter_by(phone=user_data['phone']).first()
+    existing_user = User.query.filter_by(
+        phone=user_registration_data['phone']).first()
 
     if existing_user:
         response = {
             'status': 'error',
-            'message': f"User with {user_data['phone']} already exists"
+            'message': f"User with {user_registration_data['phone']} already exists"
         }
 
         return jsonify(response)
 
     givenRole = Role.query.filter_by(name='user').first()
 
-    phone = user_data['phone']
-    password = user_data['password']
-    email = user_data['email']
-    firstname = user_data['firstname']
-    lastname = user_data['lastname']
-    country = user_data['country']
-    state = user_data['state']
-    street = user_data['street']
+    phone = user_registration_data['phone']
+    password = user_registration_data['password']
+    email = user_registration_data['email']
+    firstname = user_registration_data['firstname']
+    lastname = user_registration_data['lastname']
+    country = user_registration_data['country']
+    state = user_registration_data['state']
+    street = user_registration_data['street']
 
     pass_hashed = bcrypt.generate_password_hash(password).decode('utf-8')
 
@@ -172,11 +173,13 @@ def create_user():
         Please Complete Your profile for easy identification.
         For any inquiries, check the FAQs or post a comment.
         """
+        user_info = UserInfo(userid=user.userId,
+                             country=country, state=state, street=street)
 
         notification = Notification(
             user_id=user.id, title=title, msg_date=datetime.utcnow(), msg=msg)
 
-        db.session.add(notification)
+        db.session.add_all((notification, user_info))
         db.session.commit()
 
         # Send Password to the user
@@ -214,12 +217,12 @@ def send_reset_email(user):
 
 @users.route('/reset_password', methods=['POST'])
 def reset_request():
-    user_data = request.get_json()
-    required_fields = ["email"]
+    password_reset_data = request.get_json()
+    password_reset_fields = ["email"]
 
-    check_userdata(user_data, required_fields)
+    check_userdata(password_reset_data, password_reset_fields)
 
-    user = User.query.filter_by(email=user_data['email']).first()
+    user = User.query.filter_by(email=password_reset_data['email']).first()
 
     if user:
         send_reset_email(user)
@@ -240,28 +243,28 @@ def reset_request():
 
 @users.route('/reset', methods=['POST'])
 def reset_password():
-    user_data = request.get_json()
-    if not user_data:
+    reset_data = request.get_json()
+    if not reset_data:
         response = {
             'status': 'error',
             'message': 'Missing Data'
         }
         return jsonify(response)
 
-    if 'token' not in user_data.keys():
+    if 'token' not in reset_data.keys():
         response = {
             'status': 'error',
             'message': 'Missing Token'
         }
         return jsonify(response)
-    if 'password' not in user_data.keys():
+    if 'password' not in reset_data.keys():
         response = {
             'status': 'error',
             'message': 'Input New Password'
         }
         return jsonify(response)
 
-    token = user_data['token']
+    token = reset_data['token']
 
     user = User.verify_reset_token(token)
 
@@ -273,9 +276,7 @@ def reset_password():
 
         return jsonify(response)
 
-    user_data = request.get_json()
-
-    hashed_password = bcrypt.generate_password_hash(user_data['password'])
+    hashed_password = bcrypt.generate_password_hash(reset_data['password'])
     user.password = hashed_password
     if user.first_time_login:
         user.first_time_login = False
@@ -308,16 +309,16 @@ def profile(userid):
         return jsonify(response)
 
     if request.method == 'PUT':
-        user_data = request.get_json()
+        profile_data = request.get_json()
 
-        if not user_data:
+        if not profile_data:
             response = {
                 'status': 'error',
                 "message": "Missing data"
             }
             return jsonify(response), 400
 
-        if 'nin' not in user_data.keys():
+        if 'nin' not in profile_data.keys():
             response = {
                 'status': 'error',
                 "message": "Please Submit Your NIN"
@@ -325,16 +326,16 @@ def profile(userid):
             return jsonify(response), 400
 
         if current_user:
-            if 'firstname' in user_data.keys():
-                current_user.firstname = user_data['firstname']
-            if 'lastname' in user_data.keys():
-                current_user.lastname = user_data['lastname']
-            if 'nin' in user_data.keys():
-                current_user.nin = user_data['nin']
-            if 'email' in user_data.keys():
-                current_user.email = user_data['email']
-            if 'avartar' in user_data.keys():
-                avartar_file = save_avartar(user_data['avartar'])
+            if 'firstname' in profile_data.keys():
+                current_user.firstname = profile_data['firstname']
+            if 'lastname' in profile_data.keys():
+                current_user.lastname = profile_data['lastname']
+            if 'nin' in profile_data.keys():
+                current_user.nin = profile_data['nin']
+            if 'email' in profile_data.keys():
+                current_user.email = profile_data['email']
+            if 'avartar' in profile_data.keys():
+                avartar_file = save_avartar(profile_data['avartar'])
 
             # Get previous user avatar and delete it
             if current_user.avartar != 'person.jpg':
@@ -388,15 +389,15 @@ def profile(userid):
 # @login_required
 # @roles_required('admin','agent')
 def change_user_status():
-    user_data = request.get_json()
-    required_fields = ['action', 'user_id', 'current_user']
+    user_status_data = request.get_json()
+    user_status_fields = ['action', 'user_id', 'current_user']
 
-    check_userdata(user_data, required_fields)
+    check_userdata(user_status_data, user_status_fields)
 
-    user = User.query.filter_by(id=int(user_data['user_id'])).first()
+    user = User.query.filter_by(id=int(user_status_data['user_id'])).first()
 
     # user_role = get_user_role()[0]
-    action = user_data['action']
+    action = user_status_data['action']
 
     if action == 'infected':
         user.infected = True
@@ -423,18 +424,18 @@ def change_user_status():
 # @login_required
 # @roles_required('admin')
 def add_contacts():
-    user_data = request.get_json()
-    required_fields = ['userid', 'users']
+    new_contact_data = request.get_json()
+    required_contact_fields = ['userid', 'users']
 
-    check_userdata(user_data, required_fields)
+    check_userdata(new_contact_data, required_contact_fields)
 
-    rider = Journey.query.filter_by(rider=user_data['userid']).all()
-    client = Journey.query.filter_by(client=user_data['userid']).all()
+    rider = Journey.query.filter_by(rider=new_contact_data['userid']).all()
+    client = Journey.query.filter_by(client=new_contact_data['userid']).all()
 
     all_user_contacts = rider + client
     existing_contacts = [contact.journeycode for contact in all_user_contacts]
 
-    user_contacts = user_data['users']
+    user_contacts = new_contact_data['users']
 
     to_update = [
         contact_to_add for contact_to_add in user_contacts if user_contacts['journeycode'] not in existing_contacts]
@@ -466,23 +467,23 @@ def add_contacts():
 # @login_required
 # @roles_required('admin')
 def get_contacts():
-    user_data = request.get_json()
-    required_fields = ['userid']
+    client_data = request.get_json()
+    required_client_fields = ['userid']
 
-    check_userdata(user_data, required_fields)
+    check_userdata(client_data, required_client_fields)
 
-    rider = Journey.query.filter_by(rider=user_data['userid']).all()
-    client = Journey.query.filter_by(client=user_data['userid']).all()
+    client1 = Journey.query.filter_by(client1=client_data['userid']).all()
+    client2 = Journey.query.filter_by(client2=client_data['userid']).all()
 
-    all_user_contacts = rider + client
+    all_user_contacts = client1 + client2
 
     downloads = []
     message = 'There are currently no users in the system'
 
     if len(all_user_contacts) > 0:
         message = 'Contacts Fetched Successfully!'
-        downloads = [{'rider': journey.rider, 'journeycode': journey.journeycode, 'client': journey.client,
-                      'source': journey.source, 'destination': journey.destination, 'pickuptime': journey.pickuptime, 'uploaded': journey.uploaded} for journey in all_user_contacts]
+        downloads = [{'client1': contact.client1, 'contactcode': contact.contactcode, 'client': contact.client2,
+                      'source': contact.source, 'destination': contact.destination, 'contacttime': contact.contacttime, 'uploaded': contact.uploaded} for contact in all_user_contacts]
 
     response = {
         'status': 'success',
