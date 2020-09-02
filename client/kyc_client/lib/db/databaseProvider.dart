@@ -106,26 +106,30 @@ class DatabaseProvider extends ChangeNotifier {
     contacts
         .map((contact) => contactList.add(ContactTrace.fromJson(contact)))
         .toList();
+    getTodayContacts(contactList);
+    getInfectedContacts(contactList);
     notifyListeners();
   }
 
-  void getTodayContacts(String pickuptime) async {
-    final db = await database;
-    final contacts = await db.query(TABLE_NAME,
-        where: "pickupdate = ?", whereArgs: [pickuptime.substring(0, 10)]);
-    contacts
-        .map((contact) => contactsToday.add(ContactTrace.fromJson(contact)))
-        .toList();
-    notifyListeners();
+  void getTodayContacts(contactList) {
+    String pickuptime = DateTime.now().toString();
+
+    contactList.forEach((contact) {
+      if (DateTime.parse(contact.pickuptime)
+              .toLocal()
+              .toString()
+              .substring(0, 11) ==
+          pickuptime.substring(0, 11)) {
+        contactsToday.add(contact);
+      }
+    });
   }
 
-  void getInfectedContacts() async {
-    final db = await database;
-    final contacts =
-        await db.query(TABLE_NAME, where: "infected ==?", whereArgs: [1]);
-    contacts
-        .map((contact) => contactsInfected.add(ContactTrace.fromJson(contact)))
-        .toList();
-    notifyListeners();
+  void getInfectedContacts(contactList) async {
+    contactList.forEach((contact) {
+      if (contact.infected) {
+        contactsInfected.add(contact);
+      }
+    });
   }
 }

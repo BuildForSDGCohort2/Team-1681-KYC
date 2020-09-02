@@ -1,5 +1,6 @@
 from covidtrackapi import app
 from flask import send_from_directory, make_response
+import math
 # from momedoapi import create_app
 
 # app = create_app()
@@ -19,6 +20,16 @@ def serviceworker():
     response.headers['Content-Type'] = 'application/javascript'
 
     return response
+
+
+def test_sqrt():
+    num = 25
+    assert math.sqrt(num) == 5
+
+
+def testsquare():
+    num = 7
+    assert 7*7 == 40
 
 
 # Initiate the favicon

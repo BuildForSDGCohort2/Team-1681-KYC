@@ -1,7 +1,7 @@
 # ###############################################
 #####                LOGIN                  #####
 #################################################
-from flask import Blueprint, request,json, current_app, jsonify, url_for
+from flask import Blueprint, request, json, current_app, jsonify, url_for
 import jwt
 from datetime import datetime, timedelta
 from covidtrackapi.models import User, Role, Notification, Journey
@@ -129,7 +129,8 @@ def logout():
 def create_user():
     # take the user to the signin page
     user_data = request.get_json()
-    required_fields = ["phone", "password"]
+    required_fields = ["phone", "password", "email", "firstname",
+                       "lastname", "country", "state", "street", "avartar"]
 
     if not user_data:
         response = {
@@ -156,7 +157,6 @@ def create_user():
 
     existing_user = User.query.filter_by(phone=user_data['phone']).first()
 
-
     if existing_user:
         response = {
             'status': 'error',
@@ -165,16 +165,20 @@ def create_user():
 
         return jsonify(response)
 
-
     givenRole = Role.query.filter_by(name='user').first()
-
 
     phone = user_data['phone']
     password = user_data['password']
+    email = user_data['email']
+    firstname = user_data['firstname']
+    lastname = user_data['lastname']
+    country = user_data['country']
+    state = user_data['state']
+    street = user_data['street']
 
     pass_hashed = bcrypt.generate_password_hash(password).decode('utf-8')
 
-    user = User(phone=phone, password=pass_hashed, roles=str(givenRole.id))
+    user = User(phone=phone, password=pass_hashed, roles=str(givenRole.id), firstname=firstname, lastname=lastname, email=email, avartar=avartar )
 
     db.session.add(user)
 
@@ -435,7 +439,6 @@ def change_user_status():
         }
         return jsonify(response)
 
-
     user = User.query.filter_by(id=int(user_data['user_id'])).first()
 
     # user_role = get_user_role()[0]
@@ -453,14 +456,13 @@ def change_user_status():
             'message': f'User has successfully been Tagged {action.title()}d'
         }
         return jsonify(response)
-        
+
     except Exception as e:
         response = {
             'status': 'error',
             'message': 'User Tagging Failed'
         }
         return jsonify(response)
-
 
 
 @users.route('/contacts/add', methods=['POST'])
@@ -484,40 +486,38 @@ def add_contacts():
         }
         return jsonify(response)
 
-
     rider = Journey.query.filter_by(rider=user_data['userid']).all()
     client = Journey.query.filter_by(client=user_data['userid']).all()
-
-
 
     all_user_contacts = rider + client
     existing_contacts = [contact.journeycode for contact in all_user_contacts]
 
     user_contacts = user_data['users']
-    
-    to_update = [contact_to_add for contact_to_add in user_contacts if user_contacts['journeycode'] not in existing_contacts]
+
+    to_update = [
+        contact_to_add for contact_to_add in user_contacts if user_contacts['journeycode'] not in existing_contacts]
 
     # Make an upload of this
     for upload in to_update:
-        user_journey = Journey(journeycode=upload['journeycode'], rider=upload['rider'], client=upload['client'], pickuptime=upload['pickuptime'], source=upload['source'], destination=upload['destination'])
+        user_journey = Journey(journeycode=upload['journeycode'], rider=upload['rider'], client=upload['client'],
+                               pickuptime=upload['pickuptime'], source=upload['source'], destination=upload['destination'])
         db.session.add(user_journey)
 
     try:
         db.session.commit()
 
         response = {
-        'status':'success',
-        'message':'Pending Contacts Uploaded Successfully'
+            'status': 'success',
+            'message': 'Pending Contacts Uploaded Successfully'
         }
 
         return jsonify(response)
     except Exception as e:
         response = {
-        'status':'error',
-        'message':'Error Performing Updates'
+            'status': 'error',
+            'message': 'Error Performing Updates'
         }
         return jsonify(response)
-
 
 
 @users.route('/contacts', methods=['POST'])
@@ -546,13 +546,13 @@ def get_contacts():
 
     all_user_contacts = rider + client
 
-    downloads =[]
+    downloads = []
     message = 'There are currently no users in the system'
 
-    if len(all_user_contacts) > 0 :
+    if len(all_user_contacts) > 0:
         message = 'Contacts Fetched Successfully!'
         downloads = [{'rider': journey.rider, 'journeycode': journey.journeycode, 'client': journey.client,
-             'source':journey.source, 'destination':journey.destination, 'pickuptime':journey.pickuptime, 'uploaded':journey.uploaded} for journey in all_user_contacts]
+                      'source': journey.source, 'destination': journey.destination, 'pickuptime': journey.pickuptime, 'uploaded': journey.uploaded} for journey in all_user_contacts]
 
     response = {
         'status': 'success',

@@ -26,7 +26,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(120))
     nin = db.Column(db.String(120))
     roles = db.Column(db.String, nullable=False)
-    offlinecode = db.Column(db.String, nullable=False)
+    offlinecode = db.Column(db.String, nullable=False, )
     avartar = db.Column(db.String, default='person.jpg', nullable=False)
     password = db.Column(db.String(60), nullable=False)
     is_active = db.Column(db.Boolean, nullable=False, default=1)
