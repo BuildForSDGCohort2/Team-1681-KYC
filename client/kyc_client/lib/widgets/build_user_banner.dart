@@ -27,10 +27,10 @@ class UserBanner extends StatelessWidget {
           ),
           padding: EdgeInsets.all(5),
           child: CircleAvatar(
-            backgroundImage: CachedNetworkImageProvider(
-              profile,
-            ),
-          ),
+              // backgroundImage: CachedNetworkImageProvider(
+              //   profile,
+              // ),
+              ),
         ),
         SizedBox(
           width: 20,

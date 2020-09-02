@@ -25,9 +25,9 @@ class _HomeScreenState extends State<HomeScreen> {
     'source': 'Makerere',
     'destination': 'Kawempe',
     'pickuptime': DateTime.now().toUtc().toString(),
-    'pickupdate': DateTime.now().toUtc().toString().substring(0, 10),
-    'infected': true,
-    'uploaded': true,
+    'pickupdate': DateTime.now().toUtc().toString().substring(0, 11),
+    'infected': 1,
+    'uploaded': 1,
   };
 
   List<Widget> _navPages = [
@@ -41,12 +41,13 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     final api = Provider.of<DatabaseProvider>(context, listen: false);
     api.getAllContacts();
-    api.getInfectedContacts();
-    api.getTodayContacts(DateTime.now().toString());
   }
 
   @override
   Widget build(BuildContext context) {
+    print(DateTime.now().toUtc().toString().substring(0, 11) ==
+        DateTime.now().toString().substring(0, 11));
+
     return Scaffold(
       body: SafeArea(
         child: _navPages[_selectedIndex],

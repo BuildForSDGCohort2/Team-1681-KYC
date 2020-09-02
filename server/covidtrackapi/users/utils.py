@@ -3,7 +3,10 @@ from functools import wraps
 from flask import current_app
 from flask_login import current_user
 from covidtrackapi.models import Role
-import jwt, secrets,os,string
+import jwt
+import secrets
+import os
+import string
 from PIL import Image
 from datetime import datetime
 from covidtrackapi import app
@@ -98,9 +101,9 @@ def save_avartar(user_avartar):
     return avartar_filename
 
 
-def gen_pass(code_len=5, pass_type='passcode'):
+def gen_usercode(code_len=5, code_type='passcode'):
     pass_values = string.digits
-    if pass_type == 'temp_pwd':
+    if code_type == 'temp_pwd':
         pass_values += string.ascii_letters
     secrets.token_hex(16)[0:code_len]
 

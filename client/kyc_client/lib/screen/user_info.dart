@@ -478,6 +478,7 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
     //   country: _countryController.text,
     //   state: _formData['state'],
     //   street: _formData['street'],
+    // 	 avartar:  _selectedImage != null ? 'data:image/png;base64,' + base64Encode(_selectedImage.readAsBytesSync()) : ''
     // ));
     // // Change Loading State
     // setState(
