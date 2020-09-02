@@ -1,3 +1,1 @@
-"""
-Package managing the user route
-    """
+"""Package managing the user route."""
