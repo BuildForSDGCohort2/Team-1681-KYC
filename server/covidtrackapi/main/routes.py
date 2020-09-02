@@ -41,14 +41,14 @@ def new_contact():
         except Exception:
             response = {
                 'status': 'error',
-                "message": "FAQ Addition Failed"
+                "message": "Contact Addition Failed"
             }
             return jsonify(response), 500
 
     else:
         response = {
             'status': 'error',
-            "message": "Frequently Asked question already exists"
+            "message": "Contact already exists"
         }
         return jsonify(response), 200
 

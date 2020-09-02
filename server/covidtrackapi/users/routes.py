@@ -1,11 +1,11 @@
 # ###############################################
 #####                LOGIN                  #####
 #################################################
-from flask import Blueprint, request, json, current_app, jsonify, url_for
+from flask import Blueprint, request, current_app, jsonify, url_for
 import jwt
 from datetime import datetime, timedelta
-from covidtrackapi.models import User, Role, Notification, Journey
-from covidtrackapi.users.utils import is_leap_year, save_avartar, get_user_role, get_local_time, token_required
+from covidtrackapi.models import User, Role, Notification, UserContact
+from covidtrackapi.users.utils import save_avartar, get_user_role, get_local_time, token_required, check_userdata
 from flask_login import login_user, logout_user, current_user, login_required
 import os
 
@@ -39,8 +39,6 @@ def login():
             # Incase of any redirect for forced login, find the next requested page
             if user.first_time_login:
                 # Generate the token and redirect the user there to reset the password
-                reset_token = user.get_reset_token()
-
                 response = {
                     'status': 'success',
                     'message': 'Welcome to Covid-19 Tracker!',
@@ -149,9 +147,7 @@ def create_user():
     email = user_registration_data['email']
     firstname = user_registration_data['firstname']
     lastname = user_registration_data['lastname']
-    country = user_registration_data['country']
-    state = user_registration_data['state']
-    street = user_registration_data['street']
+    avartar = user_registration_data['avartar']
 
     pass_hashed = bcrypt.generate_password_hash(password).decode('utf-8')
 
@@ -173,6 +169,9 @@ def create_user():
         Please Complete Your profile for easy identification.
         For any inquiries, check the FAQs or post a comment.
         """
+        country = user_registration_data['country']
+        state = user_registration_data['state']
+        street = user_registration_data['street']
         user_info = UserInfo(userid=user.userId,
                              country=country, state=state, street=street)
 
@@ -183,7 +182,7 @@ def create_user():
         db.session.commit()
 
         # Send Password to the user
-        message = f"Your Account Was Successfully Created."
+        message = "Your Account Was Successfully Created."
         # response = send_msg(message, phone)
 
         response = {
@@ -200,19 +199,19 @@ def create_user():
         return jsonify(response)
 
 
-def send_reset_email(user):
-    token = user.get_reset_token()
+# def send_reset_email(user):
+#     token = user.get_reset_token()
 
-    msg = Message('Password Reset Request',
-                  sender='noreply@covid19tracker.com',
-                  recipients=[user.email])
+#     msg = Message('Password Reset Request',
+#                   sender='noreply@covid19tracker.com',
+#                   recipients=[user.email])
 
-    msg.body = f"""Click on the link below to reset your password
-    {url_for('users.reset_password', token=token, _external=True)}
+#     msg.body = f"""Click on the link below to reset your password
+#     {url_for('users.reset_password', token=token, _external=True)}
 
-    If you did not make this request, please ignore this message!
-                """
-    mail.send(msg)
+#     If you did not make this request, please ignore this message!
+#                 """
+#     mail.send(msg)
 
 
 @users.route('/reset_password', methods=['POST'])
@@ -360,7 +359,7 @@ def profile(userid):
             except Exception as e:
                 response = {
                     'status': 'error',
-                    'message': 'Profile Update Failed'
+                    'message': 'Profile Update Failed. '+str(e)
                 }
                 return jsonify(response)
 
@@ -415,7 +414,7 @@ def change_user_status():
     except Exception as e:
         response = {
             'status': 'error',
-            'message': 'User Tagging Failed'
+            'message': 'User Tagging Failed. '+str(e)
         }
         return jsonify(response)
 
