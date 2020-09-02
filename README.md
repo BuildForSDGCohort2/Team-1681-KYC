@@ -28,11 +28,11 @@ This app is designed of the following basis
 - [x] Search for contacts based on date, meeting location or NIN.
   
 This was done with the aim of achieving the following
-- 1 Hiding User identity and information
-- 2 Making it a choice for the users to allow them identify the time they need to know their contacts.
-- 3 An implementable system for all public areas
-- 4 An alert/notification due to close contacts being infected.
-- 5 An option to jote down the assigned persons number and code to be entered in a later time if one does not hold a smartphone or does not own one. This can be updated on web.
-- 6 Updates for infections done by a responsive body
-- 7 Search for contacts based on date, meeting location or NIN
+-1 Hiding User identity and information
+-2 Making it a choice for the users to allow them identify the time they need to know their contacts.
+-3 An implementable system for all public areas
+-4 An alert/notification due to close contacts being infected.
+-5 An option to jote down the assigned persons number and code to be entered in a later time if one does not hold a smartphone or does not own one. This can be updated on web.
+-6 Updates for infections done by a responsive body
+-7 Search for contacts based on date, meeting location or NIN
 
