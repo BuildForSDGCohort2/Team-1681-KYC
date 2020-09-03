@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter/foundation.dart';
+import 'package:kyc_client/db/databaseProvider.dart';
 import 'dart:io';
 
 import 'package:provider/provider.dart';
@@ -31,8 +32,15 @@ class MyApp extends StatelessWidget {
         accentColor: Color(0xFF00838F),
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: ChangeNotifierProvider(
-        create: (BuildContext context) => AuthProvider(),
+      home: MultiProvider(
+        providers: [
+          ChangeNotifierProvider<AuthProvider>(
+            create: (context) => AuthProvider(),
+          ),
+          ChangeNotifierProvider<DatabaseProvider>(
+            create: (context) => DatabaseProvider.db
+          ),
+        ],
         child: AuthScreen(),
       ),
     );
