@@ -1,4 +1,4 @@
-import 'dart:async';
+// import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -23,7 +23,6 @@ class _AuthScreenState extends State<AuthScreen> {
   String _countryCode = '+256';
   String _selectedCountry = 'Uganda';
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   Future validateUserPhone(
     String phone,
@@ -129,29 +128,17 @@ class _AuthScreenState extends State<AuthScreen> {
   void initState() {
     super.initState();
 
-    final api = Provider.of<DatabaseProvider>(context, listen: false);
-    api.checkConnectionStatus();
+    // final api = Provider.of<DatabaseProvider>(context);
+    // api.checkConnectionStatus();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (Provider.of<DatabaseProvider>(context).connectionStatus != 'UnKnown') {
-      _scaffoldKey.currentState.showSnackBar(
-        new SnackBar(
-          content:
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(Provider.of<DatabaseProvider>(context).connectionStatus),
-                ],
-              ),
-        ),
-      );
-    }
     return Scaffold(
-      key: _scaffoldKey,
       body: SafeArea(
         child: Builder(builder: (context) {
+          // final connStatus =
+          //     Provider.of<DatabaseProvider>(context).connectionStatus;
           return Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(colors: [
@@ -164,6 +151,9 @@ class _AuthScreenState extends State<AuthScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
+                  // connStatus != 'Connected'
+                  //     ? Text(connStatus)
+                  //     : SizedBox.shrink(),
                   Container(
                     child: Column(
                       children: [
@@ -247,9 +237,33 @@ class _AuthScreenState extends State<AuthScreen> {
                               ),
                               RaisedButton(
                                 onPressed: () {
+                                  // final connStatus =
+                                  //     Provider.of<DatabaseProvider>(context)
+                                  //         .connectionStatus;
                                   if (!_formKey.currentState.validate()) {
                                     return;
-                                  } else {
+                                  }
+                                  //  else if (connStatus == 'Unknown' ||
+                                  //     connStatus == 'No Connection') {
+                                  //   showDialog(
+                                  //       barrierDismissible: false,
+                                  //       context: context,
+                                  //       builder: (context) {
+                                  //         return AlertDialog(
+                                  //           title: Text('Network Error'),
+                                  //           content: Text(connStatus),
+                                  //           actions: [
+                                  //             FlatButton(
+                                  //               onPressed: () {
+                                  //                 Navigator.of(context).pop();
+                                  //               },
+                                  //               child: Text('OK'),
+                                  //             )
+                                  //           ],
+                                  //         );
+                                  //       });
+                                  // }
+                                  else {
                                     Navigator.of(context).pushReplacement(
                                       MaterialPageRoute(
                                         builder: (contex) => AdditionalInfoPage(

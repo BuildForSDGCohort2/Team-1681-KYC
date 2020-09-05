@@ -38,8 +38,7 @@ class MyApp extends StatelessWidget {
             create: (context) => AuthProvider(),
           ),
           ChangeNotifierProvider<DatabaseProvider>(
-            create: (context) => DatabaseProvider.db
-          ),
+              create: (context) => DatabaseProvider.db),
         ],
         child: AuthScreen(),
       ),

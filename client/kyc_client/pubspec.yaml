@@ -24,7 +24,6 @@ dependencies:
   flutter:
     sdk: flutter
 
-
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.3
@@ -44,6 +43,10 @@ dependencies:
   image_cropper: ^1.3.0
   provider: ^4.3.2+1
   connectivity: ^0.4.9+2
+  screenshot: ^0.2.0
+  # image_gallery_saver: '^1.5.0'
+  fl_chart: ^0.11.1
+  flutter_swiper: ^1.1.6
 
 dev_dependencies:
   flutter_test:
@@ -64,6 +67,8 @@ flutter:
   assets:
     - assets/images/qrcode.PNG
     - assets/images/placeholder.png
+    - assets/images/medical_masks.PNG
+    - assets/images/non_medical_masks.PNG
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

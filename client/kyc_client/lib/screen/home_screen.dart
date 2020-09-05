@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 import 'package:kyc_client/db/databaseProvider.dart';
@@ -36,6 +38,10 @@ class _HomeScreenState extends State<HomeScreen> {
     StatisticsWidget(),
     SettingWidget()
   ];
+
+  final String _chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
+  Random _rnd = Random();
+
   @override
   void initState() {
     super.initState();
@@ -80,13 +86,17 @@ class _HomeScreenState extends State<HomeScreen> {
           ? FloatingActionButton(
               backgroundColor: Color(0xFF00B686),
               onPressed: () async {
+                String contactCode = getContactCode(charlen: 8);
+                setState(() {
+                  userdata['journeycode'] = contactCode;
+                });
                 Provider.of<DatabaseProvider>(context, listen: false)
                     .insert(ContactTrace.fromJson(userdata));
-                // await Navigator.of(context).push(
-                //   MaterialPageRoute(
-                //     builder: (context) => ScanBarCode(),
-                //   ),
-                // );
+                await Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => ScanBarCode(),
+                  ),
+                );
               },
               child: Icon(Icons.crop_free),
             )
@@ -141,4 +151,8 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
+  String getContactCode({int charlen}) =>
+      String.fromCharCodes(Iterable.generate(
+          charlen, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
 }
