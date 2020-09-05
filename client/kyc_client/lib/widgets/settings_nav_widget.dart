@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kyc_client/screen/scan_surrounding.dart';
 import 'package:kyc_client/widgets/top_nav.dart';
 
 class SettingWidget extends StatelessWidget {
@@ -21,15 +22,22 @@ class SettingWidget extends StatelessWidget {
                 padding: EdgeInsets.all(8),
                 child: Column(
                   children: [
-                    Card(
-                      margin: EdgeInsets.all(10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Icon(Icons.settings),
-                          SizedBox(width: 20),
-                          Expanded(child: Text('second task')),
-                        ],
+                    InkWell(
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => ScanSurrounding(),
+                        ),
+                      ),
+                      child: Card(
+                        margin: EdgeInsets.all(10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Icon(Icons.settings),
+                            SizedBox(width: 20),
+                            Expanded(child: Text('Scan Surrounding')),
+                          ],
+                        ),
                       ),
                     ),
                     Card(

@@ -52,21 +52,33 @@ class User(db.Model, UserMixin):
         return f"User('{self.id}', '{self.offlinecode}', '{self.userId}','{self.phone}','{self.firstname}','{self.lastname}', '{self.email}', '{self.avartar}', '{self.roles}', '{self.is_active}', '{self.first_time_login}')"
 
 
-class Journey(db.Model):
-    __tablename__ = 'journey'
+class UserInfo(db.Model):
+    __tablename__ = 'user_info'
     id = db.Column(db.Integer, primary_key=True)
-    journeycode = db.Column(db.String, unique=True,
-                            nullable=False, default=generate_key)
-    rider = db.Column(db.String, nullable=False)
-    client = db.Column(db.String, nullable=False)
-    pickuptime = db.Column(db.DateTime, nullable=False)
+    userId = db.Column(db.String, unique=True, nullable=False,)
+    country = db.Column(db.String(11), unique=True, nullable=False)
+    state = db.Column(db.String(30))
+    street = db.Column(db.String(30))
+
+    def __repr__(self):
+        return f"UserInfo('{self.id}', '{self.userId}','{self.country}','{self.state}','{self.street}')"
+
+
+class UserContact(db.Model):
+    __tablename__ = 'user_contact'
+    id = db.Column(db.Integer, primary_key=True)
+    contactcode = db.Column(db.String, unique=True, nullable=False)
+    client1 = db.Column(db.String, nullable=False)
+    client2 = db.Column(db.String, nullable=False)
+    contacttime = db.Column(db.DateTime, nullable=False)
+    contacttype = db.Column(db.String, nullable=False)
     source = db.Column(db.String, nullable=False)
     destination = db.Column(db.String, nullable=False)
     uploaded = db.Column(db.Boolean, nullable=False, default=True)
     infected = db.Column(db.Boolean, nullable=False, default=False)
 
     def __repr__(self):
-        return f"Journey('{self.id}','{self.journeycode}','{self.rider}','{self.client}', '{self.pickuptime}', '{self.source}', '{self.destination}', '{self.uploaded}', '{self.infected}')"
+        return f"UserContact('{self.id}','{self.journeycode}','{self.client1}','{self.client2}', '{self.contacttime}', '{self.source}', '{self.destination}', '{self.uploaded}', '{self.infected}', '{self.contacttype}')"
 
 
 # Define the Role data-model

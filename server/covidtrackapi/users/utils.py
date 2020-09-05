@@ -11,8 +11,25 @@ from PIL import Image
 from datetime import datetime
 from covidtrackapi import app
 
-# Check for leap_year
 
+def check_userdata(user_data, required_fields):
+    if not user_data:
+        response = {
+            'status': 'error',
+            "message": "Missing data"
+        }
+
+        return jsonify(response), 400
+
+    if not all(field for field in required_fields):
+        response = {
+            'status': 'error',
+            "message": "Required Fields Missing"
+        }
+        return jsonify(response), 400
+
+
+# Check for leap_year
 
 def is_leap_year(year):
     if year % 4 == 0:

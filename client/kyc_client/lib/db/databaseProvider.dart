@@ -1,7 +1,13 @@
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:kyc_client/models/contacttrace.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite/sqlite_api.dart';
+import 'package:flutter/material.dart';
+import 'dart:async';
+import 'dart:io';
 
 import 'package:path/path.dart';
 
@@ -24,6 +30,9 @@ class DatabaseProvider extends ChangeNotifier {
   static final DatabaseProvider db = DatabaseProvider._();
 
   Database _database;
+
+  String _connectionStatus = 'Unknown';
+  String get connectionStatus => _connectionStatus;
 
   Future<Database> get database async {
     if (_database != null) {
@@ -129,6 +138,19 @@ class DatabaseProvider extends ChangeNotifier {
     contactList.forEach((contact) {
       if (contact.infected) {
         contactsInfected.add(contact);
+      }
+    });
+  }
+
+  void checkConnectionStatus() async {
+    Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+      if (result == ConnectivityResult.mobile ||
+          result == ConnectivityResult.wifi) {
+        this._connectionStatus = 'Connected';
+        notifyListeners();
+      } else {
+        this._connectionStatus = 'No Connection';
+        notifyListeners();
       }
     });
   }

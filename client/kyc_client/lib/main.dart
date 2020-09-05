@@ -1,9 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:kyc_client/api/auth_provider.dart';
-import 'package:kyc_client/screen/auth_screen.dart';
+
+import 'package:flutter/foundation.dart';
+import 'package:kyc_client/db/databaseProvider.dart';
+import 'dart:io';
+
 import 'package:provider/provider.dart';
 
+import 'package:kyc_client/api/auth_provider.dart';
+import 'package:kyc_client/screen/auth_screen.dart';
+
+void _enablePlatformOverrideForDesktop() {
+  if (!kIsWeb && (Platform.isWindows || Platform.isLinux)) {
+    debugDefaultTargetPlatformOverride = TargetPlatform.fuchsia;
+  }
+}
+
 void main() {
+  _enablePlatformOverrideForDesktop();
   runApp(MyApp());
 }
 
@@ -19,8 +32,14 @@ class MyApp extends StatelessWidget {
         accentColor: Color(0xFF00838F),
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: ChangeNotifierProvider(
-        create: (BuildContext context) => AuthProvider(),
+      home: MultiProvider(
+        providers: [
+          ChangeNotifierProvider<AuthProvider>(
+            create: (context) => AuthProvider(),
+          ),
+          ChangeNotifierProvider<DatabaseProvider>(
+              create: (context) => DatabaseProvider.db),
+        ],
         child: AuthScreen(),
       ),
     );

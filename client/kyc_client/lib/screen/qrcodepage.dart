@@ -1,10 +1,13 @@
 import 'dart:convert';
-
-import 'package:cached_network_image/cached_network_image.dart';
+import 'dart:io';
+import 'dart:typed_data';
+import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:kyc_client/screen/scanbarcode.dart';
-import 'package:kyc_client/widgets/top_nav.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:screenshot/screenshot.dart';
 
 class QRCodePage extends StatefulWidget {
   final Map<String, dynamic> encodedText;
@@ -15,6 +18,9 @@ class QRCodePage extends StatefulWidget {
 }
 
 class _QRCodePageState extends State<QRCodePage> {
+  File _imageFile;
+  ScreenshotController screenshotController = ScreenshotController();
+  GlobalKey globalKey = GlobalKey();
   @override
   initState() {
     super.initState();
@@ -111,57 +117,111 @@ class _QRCodePageState extends State<QRCodePage> {
                       height: 10,
                     ),
                     Center(
-                      child: Container(
-                        width: targetWidth * 0.85,
-                        height: 400,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8.0),
-                          gradient: LinearGradient(
-                            colors: [Colors.grey[300], Colors.white],
-                            begin: Alignment.bottomCenter,
-                            end: Alignment.topCenter,
-                          ),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            QrImage(
-                              data: jsonEncode(widget.encodedText),
-                              version: QrVersions.auto,
-                              size: 280,
-                              gapless: true,
-                              // backgroundColor: Colors.white,
-                              embeddedImageStyle: QrEmbeddedImageStyle(
-                                size: Size(40, 40),
-                              ),
-                              errorStateBuilder: (cxt, err) {
+                      child: InkWell(
+                        onLongPress: () {
+                          showModalBottomSheet(
+                              backgroundColor: Colors.white.withOpacity(.65),
+                              context: context,
+                              builder: (BuildContext context) {
                                 return Container(
-                                  child: Center(
-                                    child: Text(
-                                      "Uh oh! Something went wrong...",
-                                      textAlign: TextAlign.center,
-                                    ),
+                                  height: 150,
+                                  padding: EdgeInsets.all(10),
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        'Save / Share QR Code',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16),
+                                      ),
+                                      SizedBox(
+                                        height: 10,
+                                      ),
+                                      FlatButton(
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Icon(Icons.save_alt),
+                                              SizedBox(
+                                                width: 10,
+                                              ),
+                                              Text('Save to Gallery'),
+                                            ],
+                                          ),
+                                          onPressed: () async {}),
+                                      FlatButton(
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Icon(Icons.share),
+                                              SizedBox(
+                                                width: 10,
+                                              ),
+                                              Text('Share'),
+                                            ],
+                                          ),
+                                          onPressed: () {
+                                            print('Share Image');
+                                          }),
+                                    ],
                                   ),
                                 );
-                              },
+                              });
+                        },
+                        child: Container(
+                          width: targetWidth * 0.85,
+                          height: 400,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8.0),
+                            gradient: LinearGradient(
+                              colors: [Colors.grey[300], Colors.white],
+                              begin: Alignment.bottomCenter,
+                              end: Alignment.topCenter,
                             ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Text(
-                              'ERASW - WRWSA',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              QrImage(
+                                data: jsonEncode(widget.encodedText),
+                                version: QrVersions.auto,
+                                size: 280,
+                                gapless: true,
+                                // backgroundColor: Colors.white,
+                                embeddedImageStyle: QrEmbeddedImageStyle(
+                                  size: Size(40, 40),
+                                ),
+                                errorStateBuilder: (cxt, err) {
+                                  return Container(
+                                    child: Center(
+                                      child: Text(
+                                        "Uh oh! Something went wrong...",
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  );
+                                },
                               ),
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Text(
-                              'Here is my offline Entry Code!',
-                            ),
-                          ],
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Text(
+                                'ERASW - WRWSA',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Text(
+                                'Here is my offline Entry Code!',
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),

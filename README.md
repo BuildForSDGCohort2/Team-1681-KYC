@@ -27,7 +27,11 @@ This app is designed of the following basis
 - [x] Updates for infections done by a responsive body
 - [x] Search for contacts based on date, meeting location or NIN.
   
+<<<<<<< HEAD
 This was done with the aim of achieving the following
+=======
+  This was done with the aim of achieving the following
+>>>>>>> develop
 -  Hiding User identity and information
 -  Making it a choice for the users to allow them identify the time they need to know their contacts.
 -  An implementable system for all public areas
@@ -35,4 +39,8 @@ This was done with the aim of achieving the following
 -  An option to jote down the assigned persons number and code to be entered in a later time if one does not hold a smartphone or does not own one. This can be updated on web.
 -  Updates for infections done by a responsive body
 -  Search for contacts based on date, meeting location or NIN
+<<<<<<< HEAD
+=======
+
+>>>>>>> develop
 
