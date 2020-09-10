@@ -29,21 +29,6 @@ def check_userdata(user_data, required_fields):
         return jsonify(response), 400
 
 
-# Check for leap_year
-
-def is_leap_year(year):
-    if year % 4 == 0:
-        if year % 100 == 0:
-            if year % 400 == 0:
-                return True
-            else:
-                return False
-        else:
-            return True
-    else:
-        return False
-
-
 # Define the user_roles decorator
 def roles_required(*roles):
     def wrapper(f):
@@ -118,10 +103,8 @@ def save_avartar(user_avartar):
     return avartar_filename
 
 
-def gen_usercode(code_len=5, code_type='passcode'):
-    pass_values = string.digits
-    if code_type == 'temp_pwd':
-        pass_values += string.ascii_letters
+def gen_usercode(code_len=6):
+    pass_values = string.ascii_uppercase
     secrets.token_hex(16)[0:code_len]
 
     return ''.join(secrets.choice(pass_values) for _ in range(code_len))

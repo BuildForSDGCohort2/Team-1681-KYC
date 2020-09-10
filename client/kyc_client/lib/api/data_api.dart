@@ -6,17 +6,12 @@ import 'package:kyc_client/models/notification.dart';
 import 'package:kyc_client/models/user.dart';
 
 class DataAPI {
-  int operatorIndex;
-  int lineIndex;
-  int agentIndex;
-  int roleIndex;
-  int commandIndex;
-  int faqIndex;
   // String port = '5800';
 
   User _authenticatedUser;
-  final String url = 'http://10.0.2.2:5800';
-  // final String url = 'http://192.168.0.50:5800';
+  // final String url = 'http://10.0.2.2:5800';
+  // final String url = 'http://192.168.1.100:5800';
+  final String url = 'http://192.168.0.50:5800';
   // Login User
 
   // Future<Map<String, dynamic>> login(Map<String, String> formData) async {
@@ -36,18 +31,7 @@ class DataAPI {
     final Map<String, dynamic> parsedResponse = json.decode(response.body);
     bool hasError = true;
     String message = 'Something Went Wrong!';
-    if (parsedResponse.containsKey('reset_token')) {
-      hasError = false;
-      message = 'Authentication succeeded';
-      _authenticatedUser = User(
-        id: parsedResponse['userId'],
-        phone: formData['phone'],
-        avartar: parsedResponse['avartar'],
-        lastname: parsedResponse['lastname'],
-        firstname: parsedResponse['firstname'],
-        email: parsedResponse['email'],
-      );
-    } else if (parsedResponse.containsKey('token')) {
+    if (parsedResponse.containsKey('token')) {
       hasError = false;
       message = 'Authentication Succeeded!';
       _authenticatedUser = User(

@@ -2,7 +2,9 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:kyc_client/api/repository.dart';
 import 'package:kyc_client/models/contacttrace.dart';
+import 'package:kyc_client/models/user.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite/sqlite_api.dart';
 import 'package:flutter/material.dart';
@@ -80,17 +82,19 @@ class DatabaseProvider extends ChangeNotifier {
 
   void getJourneys() async {
     final db = await database;
-    List<Map<String, dynamic>> contacts = await db.query(TABLE_NAME, columns: [
-      COLUMN_ID,
-      COLUMN_JOURNEYCODE,
-      COLUMN_SOURCE,
-      COLUMN_DESTINATION,
-      COLUMN_CLIENT,
-      COLUMN_RIDER,
-      COLUMN_PICKUPTIME,
-      COLUMN_INFECTED,
-      COLUMN_UPLOADED
-    ]);
+    List<Map<String, dynamic>> contacts = await db.query(TABLE_NAME,
+        columns: [
+          COLUMN_ID,
+          COLUMN_JOURNEYCODE,
+          COLUMN_SOURCE,
+          COLUMN_DESTINATION,
+          COLUMN_CLIENT,
+          COLUMN_RIDER,
+          COLUMN_PICKUPTIME,
+          COLUMN_INFECTED,
+          COLUMN_UPLOADED
+        ],
+        groupBy: COLUMN_PICKUPDATE);
 
     contacts.forEach((currentContact) {
       ContactTrace contact = ContactTrace.fromJson(currentContact);
@@ -121,6 +125,7 @@ class DatabaseProvider extends ChangeNotifier {
   }
 
   void getTodayContacts(contactList) {
+    this.contactsToday = [];
     String pickuptime = DateTime.now().toString();
 
     contactList.forEach((contact) {
@@ -129,15 +134,16 @@ class DatabaseProvider extends ChangeNotifier {
               .toString()
               .substring(0, 11) ==
           pickuptime.substring(0, 11)) {
-        contactsToday.add(contact);
+        this.contactsToday.add(contact);
       }
     });
   }
 
   void getInfectedContacts(contactList) async {
+    this.contactsInfected = [];
     contactList.forEach((contact) {
       if (contact.infected) {
-        contactsInfected.add(contact);
+        this.contactsInfected.add(contact);
       }
     });
   }
@@ -146,6 +152,7 @@ class DatabaseProvider extends ChangeNotifier {
     Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
       if (result == ConnectivityResult.mobile ||
           result == ConnectivityResult.wifi) {
+        // Checkk if you can connect to google
         this._connectionStatus = 'Connected';
         notifyListeners();
       } else {
@@ -153,5 +160,12 @@ class DatabaseProvider extends ChangeNotifier {
         notifyListeners();
       }
     });
+  }
+
+  Future<Map<String, dynamic>> registerUser(
+      Map<String, dynamic> userData) async {
+    KYCDataRepository api = KYCDataRepository();
+    final response = await api.registerUser(userData);
+    print(response);
   }
 }

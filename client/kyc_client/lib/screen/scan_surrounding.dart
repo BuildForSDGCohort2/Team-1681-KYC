@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 class ScanSurrounding extends StatefulWidget {
@@ -6,6 +8,7 @@ class ScanSurrounding extends StatefulWidget {
 }
 
 class _ScanSurroundingState extends State<ScanSurrounding> {
+  double _progress = 0.0;
   @override
   initState() {
     super.initState();
@@ -82,9 +85,10 @@ class _ScanSurroundingState extends State<ScanSurrounding> {
                 height: MediaQuery.of(context).size.width * 0.95,
                 child: SizedBox(
                   child: CircularProgressIndicator(
-                    strokeWidth: 1,
+                    strokeWidth: 10,
                     semanticsValue: 'Scans',
                     backgroundColor: Colors.green.withOpacity(0.3),
+                    valueColor: new AlwaysStoppedAnimation<Color>(Colors.red),
                   ),
                 ),
               ),

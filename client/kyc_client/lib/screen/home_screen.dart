@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -92,11 +93,26 @@ class _HomeScreenState extends State<HomeScreen> {
                 });
                 Provider.of<DatabaseProvider>(context, listen: false)
                     .insert(ContactTrace.fromJson(userdata));
-                await Navigator.of(context).push(
+                final usercode = await Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => ScanBarCode(),
                   ),
                 );
+
+                final userCodemap = jsonDecode(usercode);
+
+                // var encoded = base64Decode(
+                //     'VGhpcyBpcyBteSAzMiBjb2RlIHNlY3JldGUuLi4uLi4=');
+                Map<String, dynamic> udata = {
+                  'data': 'wss://VGhpcyBpcyBteSAzMiBjb2RlIHNlY3JldGUuLi4uLi4='
+                };
+                String scanned = userCodemap['data'];
+
+                var encoded = base64Decode(scanned.substring(6));
+                String decoded = utf8.decode(encoded);
+                String starting, ending = '' ;
+                starting = decoded.substring(0,4);
+                ending = decoded.substring(0,4);
               },
               child: Icon(Icons.crop_free),
             )

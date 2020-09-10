@@ -15,8 +15,8 @@ class TopNav extends StatelessWidget {
           height: homenav ? 190 : 65,
           decoration: BoxDecoration(
             gradient: LinearGradient(colors: [
-              Theme.of(context).primaryColor,
-              Theme.of(context).accentColor,
+              Color(0xFF00B686),
+              Color(0xFF00838F),
             ]),
           ),
           child: Padding(

@@ -26,7 +26,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(120))
     nin = db.Column(db.String(120))
     roles = db.Column(db.String, nullable=False)
-    offlinecode = db.Column(db.String, nullable=False, )
+    offlinecode = db.Column(db.String, nullable=False)
     avartar = db.Column(db.String, default='person.jpg', nullable=False)
     password = db.Column(db.String(60), nullable=False)
     is_active = db.Column(db.Boolean, nullable=False, default=1)
@@ -37,6 +37,7 @@ class User(db.Model, UserMixin):
         serial = Serializer(app.config['SECRET_KEY'], expires_sec)
         return serial.dumps({'user_id': self.id}).decode('utf-8')
 
+    @staticmethod
     def verify_reset_token(token):
         serial = Serializer(app.config['SECRET_KEY'])
         try:
@@ -45,8 +46,6 @@ class User(db.Model, UserMixin):
             return None
 
         return User.query.get(user_id)
-
-    verify_reset_token = staticmethod(verify_reset_token)
 
     def __repr__(self):
         return f"User('{self.id}', '{self.offlinecode}', '{self.userId}','{self.phone}','{self.firstname}','{self.lastname}', '{self.email}', '{self.avartar}', '{self.roles}', '{self.is_active}', '{self.first_time_login}')"
@@ -78,7 +77,7 @@ class UserContact(db.Model):
     infected = db.Column(db.Boolean, nullable=False, default=False)
 
     def __repr__(self):
-        return f"UserContact('{self.id}','{self.journeycode}','{self.client1}','{self.client2}', '{self.contacttime}', '{self.source}', '{self.destination}', '{self.uploaded}', '{self.infected}', '{self.contacttype}')"
+        return f"UserContact('{self.id}','{self.contactcode}','{self.client1}','{self.client2}', '{self.contacttime}', '{self.source}', '{self.destination}', '{self.uploaded}', '{self.infected}', '{self.contacttype}')"
 
 
 # Define the Role data-model

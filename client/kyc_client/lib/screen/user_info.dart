@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:country_list_pick/country_list_pick.dart';
@@ -30,6 +31,7 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
   File _selectedImage;
 
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   final Map<String, String> _formData = {
     'password': null,
@@ -39,16 +41,16 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
     'country': null,
     'state': null,
     'street': null,
+    'avartar': null,
   };
-  bool passwordError = true,
-      confirmationError = true,
-      firstnameError = true,
-      lastnameError = true,
-      emailError = true,
-      countryError = true,
-      stateError = true,
-      streetError = true,
-      profilePicError = true;
+  bool _passwordError = true,
+      _firstnameError = true,
+      _lastnameError = true,
+      _emailError = true,
+      _countryError = true,
+      _locationStateError = true,
+      _streetError = true,
+      _profilePicError = true;
 
   @override
   void initState() {
@@ -56,8 +58,7 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
     setState(() {
       _formData['phone'] = widget.phone;
       _countryController.text = widget.country;
-      print(widget.phone);
-      print(widget.country);
+      _formData['country'] = _countryController.text;
     });
   }
 
@@ -73,7 +74,6 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
   final _firstNameFocusNode = FocusNode();
   final _lastNameFocusNode = FocusNode();
   final _emailFocusNode = FocusNode();
-  final _countryFocusNode = FocusNode();
   final _stateFocusNode = FocusNode();
   final _streetFocusNode = FocusNode();
 
@@ -151,7 +151,7 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
         ],
         androidUiSettings: AndroidUiSettings(
             toolbarTitle: 'Cropper',
-            toolbarColor: Colors.deepOrange,
+            toolbarColor: Colors.green,
             toolbarWidgetColor: Colors.white,
             initAspectRatio: CropAspectRatioPreset.original,
             lockAspectRatio: false),
@@ -160,6 +160,16 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
         ));
     setState(() {
       _selectedImage = croppedFile;
+      _formData['avartar'] = _selectedImage != null
+          ? base64Encode(_selectedImage.readAsBytesSync())
+          : '';
+      if (_selectedImage == null) {
+        _profilePicError = true;
+        _profilePicState = StepState.error;
+      } else {
+        _profilePicError = false;
+        _profilePicState = StepState.complete;
+      }
     });
     Navigator.pop(context);
   }
@@ -167,6 +177,7 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
   Widget _buildpasswordTextFormField() {
     return TextFormField(
       focusNode: _passwordFocusNode,
+      obscureText: _obscureText,
       controller: _passwordController,
       decoration: InputDecoration(
         hintText: 'Password',
@@ -182,15 +193,14 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
       },
       onChanged: (String value) {
         _formData['password'] = value;
-        if (_passwordController.text.length < 6 ||
-            _passwordController.text != _confirmPasswordController.text) {
+        if (_passwordController.text.length < 6) {
           setState(() {
-            passwordError = true;
+            _passwordError = true;
             _passwordState = StepState.error;
           });
         } else {
-          passwordError = false;
           setState(() {
+            _passwordError = false;
             _passwordState = StepState.complete;
           });
         }
@@ -201,6 +211,7 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
   Widget _buildconfirmpasswordTextFormField() {
     return TextFormField(
       controller: _confirmPasswordController,
+      obscureText: _obscureText,
       focusNode: _confirmPasswordFocusNode,
       decoration: InputDecoration(
         hintText: 'Confirm Password',
@@ -217,12 +228,12 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
       onChanged: (String value) {
         if (value.length < 6 || value != _passwordController.text) {
           setState(() {
-            confirmationError = true;
+            _passwordError = true;
             _passwordState = StepState.error;
           });
         } else {
-          confirmationError = false;
           setState(() {
+            _passwordError = false;
             _passwordState = StepState.complete;
           });
         }
@@ -250,12 +261,12 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
         _formData['firstname'] = value;
         if (_firstNameController.text.length < 2) {
           setState(() {
-            firstnameError = true;
+            _firstnameError = true;
             _nameState = StepState.error;
           });
         } else {
-          firstnameError = false;
           setState(() {
+            _firstnameError = false;
             _nameState = StepState.complete;
           });
         }
@@ -283,12 +294,12 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
         _formData['lastname'] = value;
         if (_lastNameController.text.length < 2) {
           setState(() {
-            lastnameError = true;
+            _lastnameError = true;
             _nameState = StepState.error;
           });
         } else {
-          lastnameError = false;
           setState(() {
+            _lastnameError = false;
             _nameState = StepState.complete;
           });
         }
@@ -313,15 +324,14 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
       },
       onChanged: (String value) {
         _formData['email'] = value;
-        if (value.length < 2 ||
-            (value.length > 2 && !EmailValidator.validate(value))) {
+        if (value.length < 2 || !EmailValidator.validate(value)) {
           setState(() {
-            emailError = true;
+            _emailError = true;
             _emailState = StepState.error;
           });
         } else {
-          emailError = false;
           setState(() {
+            _emailError = false;
             _emailState = StepState.complete;
           });
         }
@@ -343,6 +353,8 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
           onChanged: (code) {
             setState(() {
               _countryController.text = code.name;
+              _formData['country'] = _countryController.text;
+              _countryError = false;
             });
           },
         ),
@@ -370,12 +382,12 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
         _formData['state'] = value;
         if (value.length < 2) {
           setState(() {
-            stateError = true;
+            _locationStateError = true;
             _addressState = StepState.error;
           });
         } else {
-          stateError = false;
           setState(() {
+            _locationStateError = false;
             _addressState = StepState.complete;
           });
         }
@@ -394,22 +406,22 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
           Icons.streetview,
         ),
       ),
-      validator: (value) {
-        if (value.isEmpty || value.length < 2) {
+      validator: (street) {
+        if (street.isEmpty || street.length < 2) {
           return 'Street should be at least 2 characters long';
         }
         return null;
       },
-      onChanged: (String value) {
-        _formData['street'] = value;
-        if (value.length < 2) {
+      onChanged: (String street) {
+        _formData['street'] = street;
+        if (street.length < 2) {
           setState(() {
-            streetError = true;
+            _streetError = true;
             _addressState = StepState.error;
           });
         } else {
-          streetError = false;
           setState(() {
+            _streetError = false;
             _addressState = StepState.complete;
           });
         }
@@ -444,63 +456,53 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
   }
 
   bool inputValid() {
-    if (passwordError ||
-        firstnameError ||
-        lastnameError ||
-        emailError ||
-        countryError ||
-        stateError ||
-        streetError) {
+    if (_passwordError ||
+        _firstnameError ||
+        _lastnameError ||
+        _emailError ||
+        _countryError ||
+        _locationStateError ||
+        _streetError ||
+        _profilePicError) {
       return false;
     }
     return true;
   }
 
+  // void _submitForm(datamodel) async {
   void _submitForm() async {
-    print(_formData);
-    // if (!inputValid() || !_formKey.currentState.validate()) {
-    //   print('Error Occured');
-    //   // Scaffold.of(context).showSnackBar(
-    //   //   SnackBar(
-    //   //     content: Text('You have invalid inputs'),
-    //   //   ),
-    //   // );
-    // }
-    // setState(() {
-    //   _isLoading = true;
-    // });
-    // final additionalInfoSuccess = await api.registerUser(User(
-    //   phone: _formData['phone'],
-    //   email: _formData['email'],
-    //   firstname: _formData['firstname'],
-    //   lastname: _formData['lastname'],
-    //   password: _formData['password'],
-    //   country: _countryController.text,
-    //   state: _formData['state'],
-    //   street: _formData['street'],
-    // 	 avartar:  _selectedImage != null ? 'data:image/png;base64,' + base64Encode(_selectedImage.readAsBytesSync()) : ''
-    // ));
-    // // Change Loading State
-    // setState(
-    //   () {
-    //     _isLoading = false;
-    //   },
-    // );
-
-    // if (additionalInfoSuccess.containsKey('data')) {
-    //   Navigator.pushReplacement(
-    //     context,
-    //     MaterialPageRoute(
-    //       builder: (BuildContext context) {
-    //         // setSharedPreferences(User.fromJson(additionalInfoSuccess['data']));
-    //         return _isLoading
-    //             ? Center(
-    //                 child: CircularProgressIndicator(),
-    //               )
-    //             : HomeScreen();
-    //       },
+    // if (!_formKey.currentState.validate()) {
+    //   _scaffoldKey.currentState.showSnackBar(
+    //     SnackBar(
+    //       content: Text('You have invalid inputs'),
     //     ),
     //   );
+    // } else {
+    //   setState(() {
+    //     _isLoading = true;
+    //   });
+    //   final additionalInfoSuccess = await datamodel.registerUser(_formData);
+    //   // Change Loading State
+    //   setState(
+    //     () {
+    //       _isLoading = false;
+    //     },
+    //   );
+
+    //   if (additionalInfoSuccess.containsKey('data')) {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (BuildContext context) {
+          // setSharedPreferences(User.fromJson(additionalInfoSuccess['data']));
+          return _isLoading
+              ? Center(
+                  child: CircularProgressIndicator(),
+                )
+              : HomeScreen();
+        },
+      ),
+    );
     // } else {
     //   showDialog(
     //     context: context,
@@ -520,6 +522,7 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
     //     },
     //   );
     // }
+    // }
 
     // widget.loginUser(context, user);
   }
@@ -527,6 +530,7 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(colors: [
@@ -555,54 +559,58 @@ class _AdditionalInfoPageState extends State<AdditionalInfoPage> {
                 height: 10,
               ),
               Expanded(
-                child: Form(
-                  key: _formKey,
-                  autovalidate: true,
-                  child: Stepper(
-                    steps: _detailStepper(context),
-                    type: StepperType.vertical,
-                    physics: ClampingScrollPhysics(),
-                    currentStep: this._currentStep,
-                    onStepTapped: (step) {
-                      setState(
-                        () {
-                          this._currentStep = step;
-                        },
-                      );
-                    },
-                    onStepContinue: () {
-                      setState(
-                        () {
-                          if (this._currentStep <
-                              this._detailStepper(context).length - 1) {
-                            this._currentStep = this._currentStep + 1;
-                          } else {
-                            // _submitForm();
-                            Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(builder: (context) {
-                                return ChangeNotifierProvider<DatabaseProvider>(
-                                  create: (context) => DatabaseProvider.db,
-                                  child: HomeScreen(),
-                                );
-                              }),
-                            );
-                          }
-                        },
-                      );
-                    },
-                    onStepCancel: () {
-                      setState(
-                        () {
-                          if (this._currentStep > 0) {
-                            this._currentStep -= 1;
-                          } else {
-                            this._currentStep = 0;
-                          }
-                        },
-                      );
-                    },
-                  ),
-                ),
+                child: Consumer<DatabaseProvider>(
+                    builder: (context, model, child) {
+                  return Form(
+                    key: _formKey,
+                    autovalidate: true,
+                    child: Stepper(
+                      steps: _detailStepper(context),
+                      type: StepperType.vertical,
+                      physics: ClampingScrollPhysics(),
+                      currentStep: this._currentStep,
+                      onStepTapped: (step) {
+                        setState(
+                          () {
+                            this._currentStep = step;
+                          },
+                        );
+                      },
+                      onStepContinue: () {
+                        setState(
+                          () {
+                            if (this._currentStep <
+                                this._detailStepper(context).length - 1) {
+                              this._currentStep = this._currentStep + 1;
+                            } else {
+                              // _submitForm(model);
+                              _submitForm();
+                              // Navigator.of(context).pushReplacement(
+                              //   MaterialPageRoute(builder: (context) {
+                              //     return ChangeNotifierProvider<DatabaseProvider>(
+                              //       create: (context) => DatabaseProvider.db,
+                              //       child: HomeScreen(),
+                              //     );
+                              //   }),
+                              // );
+                            }
+                          },
+                        );
+                      },
+                      onStepCancel: () {
+                        setState(
+                          () {
+                            if (this._currentStep > 0) {
+                              this._currentStep -= 1;
+                            } else {
+                              this._currentStep = 0;
+                            }
+                          },
+                        );
+                      },
+                    ),
+                  );
+                }),
               ),
             ],
           ),

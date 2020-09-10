@@ -1,35 +1,37 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
 import 'package:kyc_client/screen/scanbarcode.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:screenshot/screenshot.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class QRCodePage extends StatefulWidget {
-  final Map<String, dynamic> encodedText;
-  QRCodePage(this.encodedText);
-
   @override
   _QRCodePageState createState() => _QRCodePageState();
 }
 
 class _QRCodePageState extends State<QRCodePage> {
+  String usercode;
   File _imageFile;
   ScreenshotController screenshotController = ScreenshotController();
   GlobalKey globalKey = GlobalKey();
   @override
   initState() {
     super.initState();
+    getSharedPref();
+  }
+
+  void getSharedPref() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    setState(() {
+      usercode = pref.getString('usercode');
+    });
   }
 
   Widget _buildQRCodeSection(BuildContext context) {
-    final double devWidth = MediaQuery.of(context).size.width;
-    final double devHeight = MediaQuery.of(context).size.height;
-    final double targetWidth = devWidth > 550.0 ? 500.0 : devWidth * 0.95;
     return Column(
       children: [
         Column(
@@ -38,8 +40,8 @@ class _QRCodePageState extends State<QRCodePage> {
               height: 65,
               decoration: BoxDecoration(
                 gradient: LinearGradient(colors: [
-                  Theme.of(context).primaryColor,
-                  Theme.of(context).accentColor,
+                  Color(0xFF00B686),
+                  Color(0xFF00838F),
                 ]),
               ),
               child: Padding(
@@ -82,8 +84,8 @@ class _QRCodePageState extends State<QRCodePage> {
           child: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(colors: [
-                Theme.of(context).primaryColor,
-                Theme.of(context).accentColor,
+                Color(0xFF00B686),
+                Color(0xFF00838F),
               ]),
             ),
             child: ListView(
@@ -97,16 +99,24 @@ class _QRCodePageState extends State<QRCodePage> {
                         child: RichText(
                           text: TextSpan(
                             text: 'Please, Let the users scan the  ',
-                            style: TextStyle(fontSize: 14),
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.white,
+                            ),
                             children: <TextSpan>[
                               TextSpan(
                                   text: 'QR Code',
                                   style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14)),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                    color: Colors.black54,
+                                  )),
                               TextSpan(
                                 text: ' Below!',
-                                style: TextStyle(fontSize: 14),
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.white,
+                                ),
                               ),
                             ],
                           ),
@@ -171,7 +181,7 @@ class _QRCodePageState extends State<QRCodePage> {
                               });
                         },
                         child: Container(
-                          width: targetWidth * 0.85,
+                          width: 320,
                           height: 400,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8.0),
@@ -185,7 +195,7 @@ class _QRCodePageState extends State<QRCodePage> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
                               QrImage(
-                                data: jsonEncode(widget.encodedText),
+                                data: jsonEncode({'data': 'wss://' + usercode}),
                                 version: QrVersions.auto,
                                 size: 280,
                                 gapless: true,

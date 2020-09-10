@@ -5,7 +5,7 @@ import 'package:kyc_client/models/user.dart';
 abstract class DataRepository {
   // User
   Future<Map<String, dynamic>> login(Map<String, dynamic> userData);
-  Future<Map<String, dynamic>> registerUser(User user);
+  Future<Map<String, dynamic>> registerUser(Map<String, dynamic> userData);
   Future<Map<String, dynamic>> resetPassword(
       User user, Map<String, dynamic> userData);
   Future<Map<String, dynamic>> fetchUsers(String level);
@@ -33,7 +33,9 @@ class KYCDataRepository implements DataRepository {
   }
 
   @override
-  Future<Map<String, dynamic>> registerUser(User user) async {
+  Future<Map<String, dynamic>> registerUser(
+      Map<String, dynamic> userData) async {
+    User user = User.fromJson(userData);
     final APIResponse response = await api.createUser(user);
     if (response.error) {
       return {'error': response.errorMessage};

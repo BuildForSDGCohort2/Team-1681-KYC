@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:kyc_client/api/data_api.dart';
+import 'package:kyc_client/api/repository.dart';
 import 'package:kyc_client/models/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -37,48 +39,36 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void registerUser(Map<String, dynamic> userData) {
-    // SharedPreferences pref = await SharedPreferences.getInstance();
-    // final user = await api.register(userData);
+  void registerUser(Map<String, dynamic> userData) async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    KYCDataRepository api = KYCDataRepository();
+    final user = await api.registerUser(userData);
 
-    // // Set the shared preferences
+    // Set the shared preferences
+    pref.setString('firstname', user['firstname']);
+    pref.setString('lastname', user['lastname']);
+    pref.setString('usercode', user['usercode']);
+    pref.setString('email', user['email']);
+    pref.setString('country', user['country']);
+    pref.setString('phone', user['phone']);
+    pref.setString('state', user['state']);
+    pref.setString('token', user['token']);
+    pref.setString('avartar', user['avartar']);
+    pref.setString('street', user['street']);
+    pref.setString('offlinecode', user['offlinecode']);
 
-    // pref.setString('firstname', user['firstname']);
-    // pref.setString('lastname', user['lastname']);
-    // pref.setString('usercode', user['usercode']);
-    // pref.setString('email', user['email']);
-    // pref.setString('country', user['country']);
-    // pref.setString('phone', user['phone']);
-    // pref.setString('state', user['state']);
-    // pref.setString('token', user['token']);
-    // pref.setString('avartar', user['avartar']);
-    // pref.setString('street', user['street']);
-    // pref.setString('offlinecode', user['offlinecode']);
-
-    // currentUser = User.fromJson(user);
+    this.currentUser = User.fromJson(user);
 
     notifyListeners();
   }
 
   void loginUser(Map<String, dynamic> userData) async {
-    // SharedPreferences pref = await SharedPreferences.getInstance();
-    // final user = await api.login(userData);
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    KYCDataRepository api = KYCDataRepository();
+    final user = await api.login(userData);
+    pref.setString('token', user['token']);
 
-    // // Set the shared preferences
-
-    // pref.setString('firstname', user['firstname']);
-    // pref.setString('lastname', user['lastname']);
-    // pref.setString('usercode', user['usercode']);
-    // pref.setString('email', user['email']);
-    // pref.setString('country', user['country']);
-    // pref.setString('phone', user['phone']);
-    // pref.setString('state', user['state']);
-    // pref.setString('token', user['token']);
-    // pref.setString('avartar', user['avartar']);
-    // pref.setString('street', user['street']);
-    // pref.setString('offlinecode', user['offlinecode']);
-
-    // currentUser = User.fromJson(user);
+    this.currentUser = User.fromJson(user);
 
     notifyListeners();
   }

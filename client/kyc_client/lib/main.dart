@@ -17,30 +17,30 @@ void _enablePlatformOverrideForDesktop() {
 
 void main() {
   _enablePlatformOverrideForDesktop();
+  Provider.debugCheckInvalidValueType = null;
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        platform: TargetPlatform.iOS,
-        primaryColor: Color(0xFF00B686),
-        accentColor: Color(0xFF00838F),
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: MultiProvider(
-        providers: [
-          ChangeNotifierProvider<AuthProvider>(
-            create: (context) => AuthProvider(),
-          ),
-          ChangeNotifierProvider<DatabaseProvider>(
-              create: (context) => DatabaseProvider.db),
-        ],
-        child: AuthScreen(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<AuthProvider>(
+          create: (context) => AuthProvider(),
+        ),
+        ChangeNotifierProvider<DatabaseProvider>(
+            create: (context) => DatabaseProvider.db),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'KYC',
+        theme: ThemeData(
+          platform: TargetPlatform.iOS,
+          primaryColor: Colors.orange,
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+        ),
+        home: AuthScreen(),
       ),
     );
   }

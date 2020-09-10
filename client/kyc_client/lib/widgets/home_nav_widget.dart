@@ -42,34 +42,30 @@ class _HomeWidgetState extends State<HomeWidget> {
                   topLeft: Radius.circular(8),
                 ),
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Consumer<DatabaseProvider>(
-                    builder: (context, data, child) => buildContactSummary(
+              child: Consumer<DatabaseProvider>(
+                builder: (context, model, child) => Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    buildContactSummary(
                       icon: Icons.today,
                       label: 'Today',
-                      data: data.contactsToday,
+                      data: model.contactsToday,
                       iconColor: Color(0xFF00b300),
                     ),
-                  ),
-                  Consumer<DatabaseProvider>(
-                    builder: (context, data, child) => buildContactSummary(
+                    buildContactSummary(
                       icon: Icons.people_outline,
                       label: 'All Contacts',
-                      data: data.contactList,
+                      data: model.contactList,
                       iconColor: Color(0xFFffa500),
                     ),
-                  ),
-                  Consumer<DatabaseProvider>(
-                    builder: (context, data, child) => buildContactSummary(
+                    buildContactSummary(
                       icon: Icons.mood_bad,
                       label: 'Infected',
-                      data: data.contactsInfected,
+                      data: model.contactsInfected,
                       iconColor: Color(0xFFb33636),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ))
       ],
@@ -115,11 +111,11 @@ class _HomeWidgetState extends State<HomeWidget> {
             ),
             Container(
               width: 85,
-              padding: EdgeInsets.only(left: 5, right: 5),
+              padding: EdgeInsets.only(left: 3, right: 3),
               decoration: BoxDecoration(
                 color: iconColor,
                 border: Border.all(color: iconColor),
-                borderRadius: BorderRadius.circular(15),
+                borderRadius: BorderRadius.circular(20),
               ),
               child: Center(
                 child: Text(

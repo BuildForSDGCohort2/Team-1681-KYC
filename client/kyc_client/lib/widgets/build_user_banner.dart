@@ -71,8 +71,11 @@ class UserBanner extends StatelessWidget {
           ),
         ),
         GestureDetector(
-          onTap: () => Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => QRCodePage({'data': 'data'}))),
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => QRCodePage(),
+            ),
+          ),
           child: Image(
             image: AssetImage('assets/images/qrcode.PNG'),
             width: 20,

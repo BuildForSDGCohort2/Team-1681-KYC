@@ -47,6 +47,8 @@ dependencies:
   # image_gallery_saver: '^1.5.0'
   fl_chart: ^0.11.1
   flutter_swiper: ^1.1.6
+  equatable: ^1.0.0
+  encrypt: ^4.0.2
 
 dev_dependencies:
   flutter_test:
